@@ -1,6 +1,8 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
 import './login.css';
+import { PostUser } from '../../interfaces/requests';
+import { requestLoginUser } from '../../services/authentication';
 
 interface State {
     username: string,
@@ -48,6 +50,14 @@ class LoginPage extends React.Component<null, State> {
     }
 
     loginAttempt = () => {
+        const requestBody: PostUser = {
+            username: this.state.username,
+            password: this.state.password
+        }
+
+        requestLoginUser(requestBody).then(res => {
+            console.log(res)
+        })
     }
 }
 

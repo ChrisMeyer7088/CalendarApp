@@ -1,6 +1,8 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
 import './register.css';
+import { PostUser } from '../../interfaces/requests';
+import { requestRegisterUser } from '../../services/authentication';
 
 interface State {
     username: string,
@@ -83,7 +85,14 @@ constructor(props: any) {
             registrationClicked: true
         })
         if(this.validPasswordReq()) {
-            
+            const requestBody: PostUser = {
+                username: this.state.username,
+                password: this.state.password
+            }
+
+            requestRegisterUser(requestBody).then(res => {
+                console.log(res)
+            });
         }
     }
 
