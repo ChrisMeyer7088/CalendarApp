@@ -1,9 +1,6 @@
 import React from 'react';
 
 class HomePage extends React.Component<null, null> {
-    constructor(props: any) {
-        super(props);
-    }
 
     render() {
         return (

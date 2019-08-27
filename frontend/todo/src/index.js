@@ -1,14 +1,21 @@
 import React from 'react';
 import ReactDOM from 'react-dom';
-import { Route, Redirect, Link, BrowserRouter as Router } from 'react-router-dom';
+import { Route, Redirect, Switch, BrowserRouter as Router } from 'react-router-dom';
 import './index.css';
 import * as serviceWorker from './serviceWorker';
 import HomePage from './pages/home/home';
+import LoginPage from './pages/login/login';
+import RegistrationPage from './pages/register/register';
+// import AuthenticationContainer from './services/authentication'
 
 const routing = (
     <Router>
-        <Route path='/home' render = {() => <HomePage />} />
-        <Redirect from='**' to="/home" />
+        <Switch>
+            <Route path='/home' render = {() => <HomePage />} />
+            <Route path='/login' render = {() => <LoginPage />} />
+            <Route path='/register' render = {() => <RegistrationPage />} />
+            <Route render = {() => <Redirect to={{pathname:"/login"}} />} />
+        </Switch>
     </Router>
 )
 
