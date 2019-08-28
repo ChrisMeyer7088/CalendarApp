@@ -25,9 +25,7 @@ function dropNoticesTable () {
         pool.query(deleteNoticesTableQuery)
             .then(results => console.log(results))
             .catch(err => reject(err))
-            .then(() => {
-                resolve();
-            })
+            .then(() => resolve())
     })
 }
 
@@ -36,9 +34,7 @@ function createNoticesTable () {
         pool.query(createNoticesTableQuery)
             .then(result => console.log(result))
             .catch(err => reject(err))
-            .then(() => {
-                resolve();
-            })
+            .then(() => resolve())
     })
 } 
 

@@ -10,18 +10,17 @@ function dropTables() {
 function createTables() {
   createUsersTable()
   .then(createNoticesTable)
-  .catch(err => console.log(err))
+  .catch(err => console.error(err.stack))
 }
 
 function reInitalizeDB() {
+  //Data is dependent promises must be executed in a certain order
   dropNoticesTable()
     .then(dropUsersTable)
     .then(createUsersTable)
     .then(createNoticesTable)
-    .catch(err => console.log(err));
+    .catch(err => console.error(err.stack));
 }
-
-reInitalizeDB();
 
 module.exports = {
   dropTables,
