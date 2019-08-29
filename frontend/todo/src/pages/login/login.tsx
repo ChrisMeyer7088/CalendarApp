@@ -29,9 +29,9 @@ class LoginPage extends React.Component<null, State> {
                     <h3>UserName</h3>
                     <input value={username} onChange={e => updateUsername(e)} placeholder="username" type="text"></input>
                     <h3>Password</h3>
-                    <input placeholder="password" type="password"></input>
+                    <input placeholder="password" value={password} onChange={e => updatePassword(e)} type="password"></input>
                 </div>
-                <button value={password} onChange={e => updatePassword(e)} className="button-submit" onClick={() => loginAttempt()}>Login</button>
+                <button className="button-submit" onClick={() => loginAttempt()}>Login</button>
                 <p>Don't have an account? Register <Link to="/register">here!</Link></p>
             </div>
         )
@@ -54,10 +54,13 @@ class LoginPage extends React.Component<null, State> {
             username: this.state.username,
             password: this.state.password
         }
-
-        requestLoginUser(requestBody).then(res => {
-            console.log(res)
-        })
+        requestLoginUser(requestBody)
+            .then(res => {
+                console.log(res)
+            })
+            .catch(err => {
+                console.error(err)
+            })
     }
 }
 

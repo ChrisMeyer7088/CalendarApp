@@ -1,6 +1,6 @@
 const express = require("express");
 const router = express.Router();
-const { createNewUser, checkUsername } = require('../db/models/users')
+const { createNewUser, getUser, checkUserCredentials } = require('../db/models/users')
 
 router.post('/register', (req, res, next) => {
     if(!req.body.username || !req.body.password) {
@@ -43,9 +43,8 @@ router.post('/user', (req, res, next) => {
             success: false
         })
     }
-    checkUsername(req.body.username)
+    getUser(req.body.username)
         .then(result => {
-            console.log(result)
             if(result.rowCount === 0){
                 res.status(200).json({
                     type: "user.username",
@@ -80,7 +79,46 @@ router.post('/user', (req, res, next) => {
 })
 
 router.post('/login', (req, res, next) => {
-    res.json({msg: "user logged in"})
+    if(!req.body.username || !req.body.password) {
+        res.status(400).json({
+            type: "user.login",
+            data: {
+                message: "Invalid request",
+            },
+            success: false
+        })
+    }
+    checkUserCredentials(req.body.username, req.body.password)
+        .then(result => {
+            if(result) {
+                res.status(200).json({
+                    type: "user.login",
+                    data: {
+                        message: "Credentials matched",
+                        loggedIn: true
+                    },
+                    success: true
+                })
+            } else {
+                res.status(200).json({
+                    type: "user.login",
+                    data: {
+                        message: "Invalid credentials",
+                        loggedIn: false
+                    },
+                    success: true
+                })
+            }
+        })
+        .catch(err => {
+            res.status(500).json({
+                type: "user.login",
+                data: {
+                    message: "Something went wrong",
+                },
+                success: false
+            })
+        })
 })
 
 module.exports = router;

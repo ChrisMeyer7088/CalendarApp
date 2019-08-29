@@ -64,11 +64,13 @@ function createNewUser(username, password) {
     })
 }
 
-function checkUsername(username) {
+function getUser(username, password = "") {
     return new Promise((resolve, reject) => {
         let queryString = `
             SELECT 
-                username 
+                username,
+                passwordHash,
+                salt 
             FROM 
                 users 
             WHERE 
@@ -76,20 +78,41 @@ function checkUsername(username) {
         `
         pool.query(queryString, [username])
             .then(result => resolve(result))
-            .catch(err => {
-                console.log(err)
-                reject(err)
-            })
+            .catch(err => reject(err))
     })
 }
 
-function checkUserQuery(username, password) {
-    return 'asd';
+function checkUserCredentials(username, password) {
+    return new Promise((resolve, reject) => {
+        getUser(username, password)
+            .then(queryResult => {
+                if(queryResult.rowCount === 1) {
+                    let existingUser = queryResult.rows[0];
+                    return compareUserCredentials(existingUser, password)
+                } else {
+                    resolve(false)
+                }
+            })
+            .then(result => {
+                resolve(result)
+            })
+            .catch((err) => reject(err))
+    });
+}
+
+function compareUserCredentials(existingUser, password) {
+    return new Promise((resolve, reject) => {
+        bcrypt.hash(password, existingUser["salt"], (err, hash) => {
+            if(err) reject(err);
+            resolve(hash === existingUser["passwordhash"]);
+        })
+    })
 }
 
 module.exports = {
     createUsersTable,
     dropUsersTable,
     createNewUser,
-    checkUsername
+    getUser,
+    checkUserCredentials
 }

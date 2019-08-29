@@ -183,6 +183,11 @@ constructor(props: any) {
         requestRegisterUser(requestBody)
             .then(res => {
                 console.log(res)
+                this.setState({
+                    username: "",
+                    password: "",
+                    cpassword: ""
+                })
             })
             .catch(err => console.error(err))
     }
