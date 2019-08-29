@@ -1,5 +1,5 @@
 import React from 'react';
-import { Link } from 'react-router-dom';
+import { Link, Redirect } from 'react-router-dom';
 import './register.css';
 import { PostUser } from '../../interfaces/requests';
 import { CheckUser } from '../../interfaces/responses'
@@ -16,7 +16,8 @@ interface State {
     usernameExists: boolean,
     passwordFieldHasBeenSelected: boolean,
     usernameFiedlHasBeenSelected: boolean,
-    usernameIsBlank: boolean
+    usernameIsBlank: boolean,
+    redirectToLogin: boolean
 }
 
 class RegistrationPage extends React.Component<null, State> {
@@ -34,13 +35,17 @@ constructor(props: any) {
         usernameExists: false,
         passwordFieldHasBeenSelected: false,
         usernameFiedlHasBeenSelected: false,
-        usernameIsBlank: true
+        usernameIsBlank: true,
+        redirectToLogin: false
     }
 }
 
     render() {
         const { updateConfirmPassword, updateUsername, updatePassword, registerUser, renderPasswordReq, renderUsernameCheck } = this;
-        const { username, cpassword, password, canRegister } = this.state;
+        const { username, cpassword, password, canRegister, redirectToLogin } = this.state;
+
+        if(redirectToLogin) return (<Redirect to="/login"/>)
+
          return (
             <div>
                 <h1 className="h1-title">Register</h1>
@@ -186,7 +191,8 @@ constructor(props: any) {
                 this.setState({
                     username: "",
                     password: "",
-                    cpassword: ""
+                    cpassword: "",
+                    redirectToLogin: true
                 })
             })
             .catch(err => console.error(err))
