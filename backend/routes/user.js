@@ -1,6 +1,7 @@
 const express = require("express");
 const router = express.Router();
 const { createNewUser, getUser, checkUserCredentials } = require('../db/models/users')
+const { createToken } = require('../db/models/token');
 
 router.post('/register', (req, res, next) => {
     if(!req.body.username || !req.body.password) {
@@ -88,17 +89,11 @@ router.post('/login', (req, res, next) => {
             success: false
         })
     }
+    //Retrieves The User entry if credentials are valid
     checkUserCredentials(req.body.username, req.body.password)
-        .then(result => {
-            if(result) {
-                res.status(200).json({
-                    type: "user.login",
-                    data: {
-                        message: "Credentials matched",
-                        loggedIn: true
-                    },
-                    success: true
-                })
+        .then(userId => {
+            if(userId) {
+                return createToken(userId)
             } else {
                 res.status(200).json({
                     type: "user.login",
@@ -108,7 +103,19 @@ router.post('/login', (req, res, next) => {
                     },
                     success: true
                 })
+                return;
             }
+        })
+        .then(tokenResult => {
+            console.log(tokenResult)
+            res.status(200).json({
+                type: "user.login",
+                data: {
+                    message: "Credentials matched",
+                    loggedIn: true
+                },
+                success: true
+            })
         })
         .catch(err => {
             res.status(500).json({

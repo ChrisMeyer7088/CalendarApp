@@ -55,7 +55,7 @@ function createNewUser(username, password) {
             .then(values => {
                 let queryString = `
                     INSERT INTO users (username, passwordHash, salt)
-                    VALUES($1, $2, $3)
+                    VALUES($1, $2, $3);
                 `
                 return pool.query(queryString, values)
             })
@@ -68,6 +68,7 @@ function getUser(username, password = "") {
     return new Promise((resolve, reject) => {
         let queryString = `
             SELECT 
+                id,
                 username,
                 passwordHash,
                 salt 
@@ -104,7 +105,11 @@ function compareUserCredentials(existingUser, password) {
     return new Promise((resolve, reject) => {
         bcrypt.hash(password, existingUser["salt"], (err, hash) => {
             if(err) reject(err);
-            resolve(hash === existingUser["passwordhash"]);
+            if(hash === existingUser["passwordhash"]) {
+                resolve(existingUser["id"]);
+            } else {
+                resolve('');
+            }
         })
     })
 }

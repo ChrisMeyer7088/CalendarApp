@@ -33,9 +33,39 @@ function createTokenTable () {
             .then(result => resolve())
             .catch(err => reject(err))
     })
-} 
+}
+
+function createToken(userId) {
+    return new Promise((resolve, reject) => {
+        let queryString = `
+        INSERT INTO token (ts, userId)
+        VALUES(to_timestamp(${Date.now()} / 1000.0), $1);
+        `;
+        pool.query(queryString, [userId])
+            .then(result => resolve(result))
+            .catch(err => reject(err))
+    })
+}
+
+function getAssociatedUser(tokenId) {
+    return new Promise((resolve,reject) => {
+        let queryString = `
+        SELECT 
+            userId 
+        FROM 
+            token
+        WHERE
+            id = $1;
+        `;
+        pool.query(queryString, [tokenId])
+            .then(result => resolve(result))
+            .catch(err => reject(err))
+    })
+}
 
 module.exports = {
     createTokenTable,
-    dropTokenTable
+    dropTokenTable,
+    createToken,
+    getAssociatedUser
 }

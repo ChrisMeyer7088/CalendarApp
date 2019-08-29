@@ -50,9 +50,11 @@ class LoginPage extends React.Component<null, State> {
     }
 
     loginAttempt = () => {
+        const { username, password } = this.state;
+        if(!username || !password) return
         const requestBody: PostUser = {
-            username: this.state.username,
-            password: this.state.password
+            username,
+            password
         }
         requestLoginUser(requestBody)
             .then(res => {
