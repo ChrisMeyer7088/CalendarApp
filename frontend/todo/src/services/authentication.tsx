@@ -10,3 +10,7 @@ export const requestRegisterUser = (requestBody: PostUser) => {
 export const requestLoginUser = (requestBody: PostUser) => {
     return axios.post(baseServerURL + "user/login", requestBody);
 }
+
+export const requestCheckUsername = (username: string) => {
+    return axios.post(baseServerURL + 'user/user', {username});
+}

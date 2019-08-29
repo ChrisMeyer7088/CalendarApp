@@ -24,22 +24,20 @@ const createUsersTableQuery = `
 function dropUsersTable() {
     return new Promise((resolve, reject)=> {
         pool.query(deleteUsersTableQuery)
-            .then(results => console.log(results))
+            .then(result => resolve(result))
             .catch(err => reject(err))
-            .then(() => resolve())
     })
 }
 
 function createUsersTable() {
     return new Promise((resolve, reject) => {
         pool.query(createUsersTableQuery)
-            .then(result => console.log(result))
+            .then(result => resolve(result))
             .catch(err => reject(err))
-            .then(() => resolve())
     })
 }
 
-function createUserQuery(username, password) {
+function createUserQueryInfo(username, password) {
     return new Promise((resolve, reject) => {
         bcrypt.genSalt(10, (err, salt) => {
             if(err) reject(err);
@@ -53,7 +51,7 @@ function createUserQuery(username, password) {
 
 function createNewUser(username, password) {
     return new Promise((resolve, reject) => {
-        createUserQuery(username, password)
+        createUserQueryInfo(username, password)
             .then(values => {
                 let queryString = `
                     INSERT INTO users (username, passwordHash, salt)
@@ -61,14 +59,37 @@ function createNewUser(username, password) {
                 `
                 return pool.query(queryString, values)
             })
-            .then(result => console.log(result))
-            .then(() => resolve())
+            .then(result => resolve(result))
             .catch(err => reject(err))
     })
+}
+
+function checkUsername(username) {
+    return new Promise((resolve, reject) => {
+        let queryString = `
+            SELECT 
+                username 
+            FROM 
+                users 
+            WHERE 
+                username = $1;
+        `
+        pool.query(queryString, [username])
+            .then(result => resolve(result))
+            .catch(err => {
+                console.log(err)
+                reject(err)
+            })
+    })
+}
+
+function checkUserQuery(username, password) {
+    return 'asd';
 }
 
 module.exports = {
     createUsersTable,
     dropUsersTable,
-    createNewUser
+    createNewUser,
+    checkUsername
 }

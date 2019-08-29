@@ -2,7 +2,8 @@ import React from 'react';
 import { Link } from 'react-router-dom';
 import './register.css';
 import { PostUser } from '../../interfaces/requests';
-import { requestRegisterUser } from '../../services/authentication';
+import { CheckUser } from '../../interfaces/responses'
+import { requestRegisterUser, requestCheckUsername } from '../../services/authentication';
 
 interface State {
     username: string,
@@ -12,7 +13,10 @@ interface State {
     passwordIsMinLength: boolean,
     passwordsMatch: boolean,
     passwordsHaveCorrectCharacters: boolean,
-    registrationClicked: boolean
+    usernameExists: boolean,
+    passwordFieldHasBeenSelected: boolean,
+    usernameFiedlHasBeenSelected: boolean,
+    usernameIsBlank: boolean
 }
 
 class RegistrationPage extends React.Component<null, State> {
@@ -27,77 +31,116 @@ constructor(props: any) {
         passwordIsMinLength: false,
         passwordsMatch: false,
         passwordsHaveCorrectCharacters: false,
-        registrationClicked: false
+        usernameExists: false,
+        passwordFieldHasBeenSelected: false,
+        usernameFiedlHasBeenSelected: false,
+        usernameIsBlank: true
     }
 }
 
     render() {
-        const { updateConfirmPassword, updateUsername, updatePassword, registerUser, renderPasswordReq } = this;
-        const { username, cpassword, password, registrationClicked } = this.state;
+        const { updateConfirmPassword, updateUsername, updatePassword, registerUser, renderPasswordReq, renderUsernameCheck } = this;
+        const { username, cpassword, password, canRegister } = this.state;
          return (
             <div>
                 <h1 className="h1-title">Register</h1>
                 <div id="RegistrationForm">
                     <h3>Username</h3>
                     <input placeholder="username" value={username} onChange={e => updateUsername(e)} type="text"></input>
+                    {renderUsernameCheck()}
                     <h3>Password</h3>
                     <input placeholder="password" value={password} onChange={e => updatePassword(e)} type="password"></input>
-                    <div hidden={!registrationClicked}>
-                        {renderPasswordReq()}
-                    </div>
+                    {renderPasswordReq()}
                     <h3>Confirm Password</h3>
                     <input placeholder="confirm password" value={cpassword} onChange={e => updateConfirmPassword(e)} type="password"></input>
                 </div>
-                <button onClick={() => registerUser()} className="button-submit" >Create</button>
+                <button disabled={!canRegister} onClick={() => registerUser()} className="button-submit" >Create</button>
                 <p>Already have an account? <Link to="/login">Login!</Link></p>
             </div>
         )
     }
 
+    //Renders password requirement tag
     renderPasswordReq = () => {
-        const {passwordIsMinLength, passwordsMatch, passwordsHaveCorrectCharacters} = this.state
-        if(!passwordIsMinLength) return (<p>Password must be a minimum of eight (8) characters in length</p>)
+        const {passwordIsMinLength, passwordsMatch, passwordsHaveCorrectCharacters, passwordFieldHasBeenSelected} = this.state
+        if(!passwordFieldHasBeenSelected) return
+        if(!passwordIsMinLength) return (<p>Password must be a minimum of 8 characters</p>)
         if(!passwordsHaveCorrectCharacters) return (<p>Password must contain at least 1 number and 1 uppercase character</p>)
         if(!passwordsMatch) return (<p>Passwords must match</p>)
     }
 
     updateUsername = (event: any) => {
+        //Set immediately so page is still responsive even if axios request takes a while
         this.setState({
             username: event.target.value
         })
-    }
-
-    updatePassword = (event: any) => {
-        let passwordUpdate: string = event.target.value;
-        this.setState({
-            password: passwordUpdate
-        })
-    }
-
-    updateConfirmPassword = (event: any) => {
-        this.setState({
-            cpassword: event.target.value
-        })
-    }
-
-    registerUser = () => {
-        this.setState({
-            registrationClicked: true
-        })
-        if(this.validPasswordReq()) {
-            const requestBody: PostUser = {
-                username: this.state.username,
-                password: this.state.password
-            }
-
-            requestRegisterUser(requestBody).then(res => {
-                console.log(res)
-            });
+        //If new username isn't empty check for available username
+        if(event.target.value){
+            requestCheckUsername(event.target.value)
+            .then(res => {
+                this.checkUsername(res.data)
+            })
+            .catch(err => console.error(err))
+        } else {
+            this.setState({
+                usernameIsBlank: true,
+                usernameExists: false,
+                usernameFiedlHasBeenSelected: true,
+                canRegister: false
+            })
         }
     }
 
-    validPasswordReq = (): boolean => {
-        if(this.state.password.length < 8) {
+    //Checks for the validity of the username and updates corresponding state
+    checkUsername = (checkUser: CheckUser) => {
+        const { passwordIsMinLength, passwordsHaveCorrectCharacters, passwordsMatch} = this.state;
+        let canRegister = false;
+        if(!checkUser.data.userExists && passwordIsMinLength && passwordsHaveCorrectCharacters && passwordsMatch) canRegister = true;
+        this.setState({
+            usernameExists: checkUser.data.userExists,
+            usernameIsBlank: false,
+            usernameFiedlHasBeenSelected: true,
+            canRegister
+        })
+    }
+
+    //Renders the username availability tag
+    renderUsernameCheck = () => {
+        const {usernameExists, usernameFiedlHasBeenSelected, usernameIsBlank} = this.state;
+        if(!usernameFiedlHasBeenSelected) return
+        if(usernameExists) return (<p>Username Already Taken</p>)
+        if(usernameIsBlank) return (<p>Username cannot be blank</p>)
+        return (<p>Username Available</p>)
+    }
+
+    //Updates password and corresponding state
+    updatePassword = (event: any) => {
+        this.passwordViewUpdate(event.target.value, this.state.cpassword);
+    }
+
+    //Updates confirm password and corresponding state
+    updateConfirmPassword = (event: any) => {
+        this.passwordViewUpdate(this.state.password, event.target.value);
+    }
+
+    passwordViewUpdate = (password: string, cpassword: string) => {
+        const { validPasswordReq } = this;
+        const { usernameExists, usernameIsBlank} = this.state;
+        //Determines if all fields are ready for registration
+        let canRegister = false;
+        if(validPasswordReq(password, cpassword) && !usernameExists && !usernameIsBlank)  canRegister = true;
+        
+        this.setState({
+            password,
+            cpassword,
+            passwordFieldHasBeenSelected: true,
+            canRegister
+        })
+    }
+
+    //Checks the password and confirm password field and returns a boolean based on the validity of the fields
+    validPasswordReq = (password: string, cpassword: string): boolean => {
+        if(password.length < 8) {
             this.setState({
                 passwordIsMinLength: false
             })
@@ -107,7 +150,7 @@ constructor(props: any) {
                 passwordIsMinLength: true
             })
         }
-        if(!(/\d/.test(this.state.password) && /[A-Z]/.test(this.state.password))) {
+        if(!(/\d/.test(password) && /[A-Z]/.test(password))) {
             this.setState({
                 passwordsHaveCorrectCharacters: false
             })
@@ -117,7 +160,7 @@ constructor(props: any) {
                 passwordsHaveCorrectCharacters: true
             })
         }
-        if(this.state.cpassword !== this.state.password) {
+        if(cpassword !== password) {
             this.setState({
                 passwordsMatch: false
             })
@@ -128,6 +171,20 @@ constructor(props: any) {
             })
         }
         return true;
+    }
+
+    //Sends a registration request to the server of the user
+    registerUser = () => {
+        const requestBody: PostUser = {
+            username: this.state.username,
+            password: this.state.password
+        }
+
+        requestRegisterUser(requestBody)
+            .then(res => {
+                console.log(res)
+            })
+            .catch(err => console.error(err))
     }
 }
 
