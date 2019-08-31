@@ -92,6 +92,7 @@ router.post('/login', (req, res, next) => {
     //Retrieves The User entry if credentials are valid
     checkUserCredentials(req.body.username, req.body.password)
         .then(userId => {
+            console.log(userId)
             if(userId) {
                 return createToken(userId)
             } else {
@@ -112,12 +113,14 @@ router.post('/login', (req, res, next) => {
                 type: "user.login",
                 data: {
                     message: "Credentials matched",
-                    loggedIn: true
+                    loggedIn: true,
+                    token: tokenResult
                 },
                 success: true
             })
         })
         .catch(err => {
+            console.log(err)
             res.status(500).json({
                 type: "user.login",
                 data: {

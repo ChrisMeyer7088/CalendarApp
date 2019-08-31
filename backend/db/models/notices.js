@@ -17,24 +17,28 @@ const createNoticesTableQuery = `
         id SERIAL PRIMARY KEY,
         content varchar (80) NOT NULL,
         timestamp varchar (50) NOT NULL,
-        userId int4 REFERENCES users(id) ON DELETE CASCADE
+        userId int4 REFERENCES users(id) ON DELETE CASCADE NOT NULL 
     );
 `
 function dropNoticesTable () {
     return new Promise((resolve, reject) => {
         pool.query(deleteNoticesTableQuery)
-            .then(results => console.log(results))
+            .then(result => {
+                console.log('Dropping notices table')
+                resolve(result)
+            })
             .catch(err => reject(err))
-            .then(() => resolve())
     })
 }
 
 function createNoticesTable () {
     return new Promise((resolve, reject) => {
         pool.query(createNoticesTableQuery)
-            .then(result => console.log(result))
+            .then(result => {
+                console.log('Creating notices table')
+                resolve(result)
+            })
             .catch(err => reject(err))
-            .then(() => resolve())
     })
 } 
 

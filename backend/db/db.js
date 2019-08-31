@@ -27,6 +27,8 @@ function reInitalizeDB() {
     .catch(err => console.error(err.stack));
 }
 
+reInitalizeDB();
+
 module.exports = {
   dropTables,
   createTables,

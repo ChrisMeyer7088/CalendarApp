@@ -16,7 +16,7 @@ const deleteUsersTableQuery = `
 const createUsersTableQuery = `
     CREATE TABLE users(
         id SERIAL PRIMARY KEY,
-        username varchar (50) NOT NULL,
+        username varchar (50) UNIQUE NOT NULL,
         passwordHash varchar (100) NOT NULL,
         salt varchar (100) NOT NULL
     );
@@ -24,7 +24,10 @@ const createUsersTableQuery = `
 function dropUsersTable() {
     return new Promise((resolve, reject)=> {
         pool.query(deleteUsersTableQuery)
-            .then(result => resolve(result))
+            .then(result => {
+                console.log('Dropping users table')
+                resolve(result)
+            })
             .catch(err => reject(err))
     })
 }
@@ -32,7 +35,10 @@ function dropUsersTable() {
 function createUsersTable() {
     return new Promise((resolve, reject) => {
         pool.query(createUsersTableQuery)
-            .then(result => resolve(result))
+            .then(result => {
+                console.log('Creating users table')
+                resolve(result)
+            })
             .catch(err => reject(err))
     })
 }
