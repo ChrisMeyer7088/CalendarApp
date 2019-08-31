@@ -1,7 +1,7 @@
 const express = require("express");
 const router = express.Router();
 const { createNewUser, getUser, checkUserCredentials } = require('../db/models/users')
-const { createToken } = require('../db/models/token');
+const { createToken, checkForActiveToken } = require('../db/models/token');
 
 router.post('/register', (req, res, next) => {
     if(!req.body.username || !req.body.password) {
@@ -88,13 +88,13 @@ router.post('/login', (req, res, next) => {
             },
             success: false
         })
+        return;
     }
     //Retrieves The User entry if credentials are valid
     checkUserCredentials(req.body.username, req.body.password)
         .then(userId => {
-            console.log(userId)
             if(userId) {
-                return createToken(userId)
+                return checkForActiveToken(userId)
             } else {
                 res.status(200).json({
                     type: "user.login",
@@ -107,17 +107,37 @@ router.post('/login', (req, res, next) => {
                 return;
             }
         })
-        .then(tokenResult => {
-            console.log(tokenResult)
+        .then(tokenCheckResult => {
+            if(!tokenCheckResult) return;
+            //If no active tokens are found generate a token otherwise return the first active token
+            if(!tokenCheckResult[0]) {
+                return createToken(tokenCheckResult[1])
+            } else {
+                res.status(200).json({
+                    type: "user.login",
+                    data: {
+                        message: "Credentials matched",
+                        loggedIn: true,
+                        token: tokenCheckResult[1]
+                    },
+                    success: true
+                })
+            }
+        })
+        .then(newTokenValue => {
+            if(!newTokenValue) return;
+            console.log('At the next then')
+            console.log(newTokenValue)
             res.status(200).json({
                 type: "user.login",
                 data: {
                     message: "Credentials matched",
                     loggedIn: true,
-                    token: tokenResult
+                    token: newTokenValue
                 },
                 success: true
             })
+            return;
         })
         .catch(err => {
             console.log(err)

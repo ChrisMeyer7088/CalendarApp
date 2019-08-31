@@ -47,14 +47,12 @@ function createToken(userId) {
     return new Promise((resolve, reject) => {
         let queryString = `
         INSERT INTO token (value, ts, userId)
-        VALUES($1, to_timestamp(${Date.now()} / 1000.0), $2);
+            VALUES ($1, to_timestamp($2 / 1000.0), $3);
         `;
         generateTokenValue(userId)
-            .then(hash => pool.query(queryString, [hash, userId]))
-            .then(result => getActiveToken(userId))
-            .then(queryResult => {
-                console.log(queryResult)
-            })
+            .then(tokenValue => pool.query(queryString, [tokenValue, Date.now(), userId]))
+            .then(queryResult => checkForActiveToken(userId))
+            .then(activeToken => resolve(activeToken[1]))
             .catch(err => reject(err))
     })
 }
@@ -63,7 +61,7 @@ function generateTokenValue(userId) {
     return new Promise((resolve, reject) => {
         let value = userId + Date.now().toString();
         bcrypt.genSalt(10, (err, salt) => {
-            if(err) reject(err);
+            if(err)  reject(err);
             bcrypt.hash(value, salt, (err, hash) => {
                 if(err) reject(err);
                 resolve(hash);
@@ -72,7 +70,7 @@ function generateTokenValue(userId) {
     })
 }
 
-function getActiveToken(userId) {
+function getActiveToken(value) {
     return new Promise((resolve, reject) => {
         let queryString = `
         SELECT
@@ -80,7 +78,7 @@ function getActiveToken(userId) {
         FROM
             token
         WHERE
-            ts > to_timestamp(${Date.now()}
+            value = ${value}
         LIMIT 1;
         `;
         pool.query(queryString)
@@ -105,9 +103,33 @@ function getAssociatedUser(tokenId) {
     })
 }
 
+function checkForActiveToken(userId) {
+    return new Promise((resolve, reject) => {
+        let queryString = `
+        SELECT
+            value
+        FROM
+            token
+        WHERE
+            userId = ${userId} AND
+            ts > to_timestamp(${Date.now() - (1 + 60 * 60 * 1000)} / 1000.0)
+        `;
+        pool.query(queryString)
+            .then(queryResult => {
+                if(!queryResult.rowCount) {
+                    resolve([false, userId])
+                } else {
+                    resolve([true, queryResult.rows[0].value])
+                }
+            })
+            .catch(err => reject(err))
+    })
+}
+
 module.exports = {
     createTokenTable,
     dropTokenTable,
     createToken,
-    getAssociatedUser
+    getAssociatedUser,
+    checkForActiveToken
 }
