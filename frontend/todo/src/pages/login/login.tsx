@@ -1,12 +1,13 @@
 import React from 'react';
-import { Link } from 'react-router-dom';
+import { Link, Redirect } from 'react-router-dom';
 import './login.css';
 import { PostUser } from '../../interfaces/requests';
 import { requestLoginUser } from '../../services/authentication';
 
 interface State {
     username: string,
-    password: string
+    password: string,
+    redirectToHome: boolean
 }
 
 class LoginPage extends React.Component<null, State> {
@@ -15,13 +16,17 @@ class LoginPage extends React.Component<null, State> {
         super(props);
         this.state = {
             username: "",
-            password: ""
+            password: "",
+            redirectToHome: false
         }
     }
 
     render() {
         const { loginAttempt, state, updateUsername, updatePassword } = this;
-        const { username, password }  = state
+        const { username, password, redirectToHome }  = state
+        if(redirectToHome) {
+            return (<Redirect to="/home"/>)
+        }
         return (
             <div className="container-main">
                 <h1 className="h1-title">ToDo App Login</h1>
@@ -60,6 +65,9 @@ class LoginPage extends React.Component<null, State> {
             .then(res => {
                 console.log(res)
                 sessionStorage.setItem('todoAppToken', res.data.data.token)
+                this.setState({
+                    redirectToHome: true
+                })
             })
             .catch(err => {
                 console.error(err)

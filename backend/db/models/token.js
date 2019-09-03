@@ -70,7 +70,7 @@ function generateTokenValue(userId) {
     })
 }
 
-function getActiveToken(value) {
+function getActiveToken(tokenValue) {
     return new Promise((resolve, reject) => {
         let queryString = `
         SELECT
@@ -78,10 +78,11 @@ function getActiveToken(value) {
         FROM
             token
         WHERE
-            value = ${value}
+            value = $1 AND
+            ts > to_timestamp(${Date.now() - (1 + 60 * 60 * 1000)} / 1000.0)
         LIMIT 1;
         `;
-        pool.query(queryString)
+        pool.query(queryString, [tokenValue])
             .then(result => resolve(result))
             .catch(err => reject(err))
     })
@@ -131,5 +132,6 @@ module.exports = {
     dropTokenTable,
     createToken,
     getAssociatedUser,
-    checkForActiveToken
+    checkForActiveToken,
+    getActiveToken
 }

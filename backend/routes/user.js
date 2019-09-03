@@ -1,7 +1,7 @@
 const express = require("express");
 const router = express.Router();
 const { createNewUser, getUser, checkUserCredentials } = require('../db/models/users')
-const { createToken, checkForActiveToken } = require('../db/models/token');
+const { createToken, checkForActiveToken, getActiveToken } = require('../db/models/token');
 
 router.post('/register', (req, res, next) => {
     if(!req.body.username || !req.body.password) {
@@ -77,6 +77,44 @@ router.post('/user', (req, res, next) => {
             })
         })
 
+})
+
+router.post('/auth', (req, res, next) => {
+    console.log(req.body)
+    if(!req.body.token) {
+        res.status(400).json({
+            type: "user.authenticate",
+            data: {
+                message: "Invalid request"
+            },
+            success: false
+        })
+    } else {
+        getActiveToken(req.body.token)
+            .then(result => {
+                console.log(result)
+                if(result.rowCount) {
+                    res.status(200).json({
+                        type: "user.authenticate",
+                        data: {
+                            message: "Session authenticated",
+                            returnToLogin: false
+                        },
+                        success: false
+                    })
+                } else {
+                    res.status(200).json({
+                        type: "user.authenticate",
+                        data: {
+                            message: "Token has expired",
+                            returnToLogin: true
+                        },
+                        success: true
+                    })
+                }
+            })
+            .catch(err => console.error(err))
+    }
 })
 
 router.post('/login', (req, res, next) => {

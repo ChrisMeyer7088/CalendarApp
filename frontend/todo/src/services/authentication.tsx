@@ -14,3 +14,7 @@ export const requestLoginUser = (requestBody: PostUser) => {
 export const requestCheckUsername = (username: string) => {
     return axios.post(baseServerURL + 'user/user', {username});
 }
+
+export const requestAuthenticateSession = (token: string) => {
+    return axios.post(baseServerURL + "user/auth", {token})
+}
