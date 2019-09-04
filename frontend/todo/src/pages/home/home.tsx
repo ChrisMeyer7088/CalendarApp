@@ -1,6 +1,7 @@
 import React from 'react';
 import { Redirect } from 'react-router-dom';
 import { requestAuthenticateSession } from '../../services/authentication';
+import { reject } from 'q';
 
 interface State {
     userId: string,
@@ -32,6 +33,7 @@ class HomePage extends React.Component<null, State> {
         )
     }
 
+    //Check for valid user token and retrieve user data from token
     authenticateUser = () => {
         requestAuthenticateSession(sessionStorage.getItem('todoAppToken') || '')
             .then(res => {
@@ -41,6 +43,7 @@ class HomePage extends React.Component<null, State> {
                         redirectToLogin: true
                     })
                 }
+                console.log(res)
             })
             .catch(err => console.error(err))
     }

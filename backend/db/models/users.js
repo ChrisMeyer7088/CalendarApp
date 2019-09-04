@@ -89,6 +89,21 @@ function getUser(username, password = "") {
     })
 }
 
+function getUsers() {
+    return new Promise((resolve, reject) => {
+        let queryString = `
+        SELECT
+            id,
+            username
+        FROM
+            users
+        `
+        pool.query(queryString)
+            .then(result => resolve(result.rows))
+            .catch(err => reject(err));
+    })
+}
+
 function checkUserCredentials(username, password) {
     return new Promise((resolve, reject) => {
         getUser(username, password)
@@ -120,10 +135,25 @@ function compareUserCredentials(existingUser, password) {
     })
 }
 
+function removeUser(username) {
+    return new Promise((resolve, reject) => {
+        let queryString = `
+            DELETE FROM users
+            WHERE
+                username = $1
+        `
+        pool.query(queryString, [username])
+            .then(result => resolve(result))
+            .catch(err => reject(err))
+    })
+}
+
 module.exports = {
     createUsersTable,
     dropUsersTable,
     createNewUser,
     getUser,
-    checkUserCredentials
+    checkUserCredentials,
+    getUsers,
+    removeUser
 }

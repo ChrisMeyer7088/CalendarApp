@@ -22,7 +22,7 @@ class LoginPage extends React.Component<null, State> {
     }
 
     render() {
-        const { loginAttempt, state, updateUsername, updatePassword } = this;
+        const { loginAttempt, state, updateUsername, updatePassword, checkEnterKey } = this;
         const { username, password, redirectToHome }  = state
         if(redirectToHome) {
             return (<Redirect to="/home"/>)
@@ -34,7 +34,8 @@ class LoginPage extends React.Component<null, State> {
                     <h3>UserName</h3>
                     <input value={username} onChange={e => updateUsername(e)} placeholder="username" type="text"></input>
                     <h3>Password</h3>
-                    <input placeholder="password" value={password} onChange={e => updatePassword(e)} type="password"></input>
+                    <input placeholder="password" value={password} onChange={e => updatePassword(e)} type="password"
+                    onKeyPress={e => checkEnterKey(e)}></input>
                 </div>
                 <button className="button-submit" onClick={() => loginAttempt()}>Login</button>
                 <p>Don't have an account? Register <Link to="/register">here!</Link></p>
@@ -54,6 +55,7 @@ class LoginPage extends React.Component<null, State> {
         })
     }
 
+    //Send login request to backend
     loginAttempt = () => {
         const { username, password } = this.state;
         if(!username || !password) return
@@ -63,7 +65,7 @@ class LoginPage extends React.Component<null, State> {
         }
         requestLoginUser(requestBody)
             .then(res => {
-                console.log(res)
+                //Redirect to home after successful login
                 sessionStorage.setItem('todoAppToken', res.data.data.token)
                 this.setState({
                     redirectToHome: true
@@ -72,6 +74,12 @@ class LoginPage extends React.Component<null, State> {
             .catch(err => {
                 console.error(err)
             })
+    }
+
+    checkEnterKey = (e: any) => {
+        if(e.key === "Enter") {
+            this.loginAttempt();
+        }
     }
 }
 

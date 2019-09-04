@@ -19,8 +19,6 @@ const createNoticesTableQuery = `
         description TEXT,
         beginDate DATE NOT NULL,
         endDate DATE NOT NULL,
-        beginTime TIME NOT NULL,
-        endTime TIME NOT NULL,
         color varchar (6) NOT NULL,
         userId int4 REFERENCES users(id) ON DELETE CASCADE NOT NULL 
     );
@@ -47,11 +45,11 @@ function createNoticesTable() {
     })
 }
 
-function addNotice(title, beginDate, endDate, beginTime, endTime, color, userId, description = "") {
+function addNotice(title, beginDate, endDate, color, userId, description = "") {
     return new Promise((resolve, reject) => {
         let queryString = `
-            INSERT INTO notices (title, beginDate, endDate, beginTime, endTime, color, userId, description)
-            VALUES(${title}, ${beginDate}, ${endDate}, ${beginTime}, ${endTime}, ${color}, ${userId}, ${description})
+            INSERT INTO notices (title, beginDate, endDate, color, userId, description)
+            VALUES(${title}, ${beginDate}, ${endDate}, ${color}, ${userId}, ${description})
         `
         
         pool.query(queryString)
@@ -86,21 +84,24 @@ function removeNotice(id) {
 }
 
 
-function getNotices(userId, beginDate) {
+function getNotices(userId) {
     return new Promise((resolve, reject) => {
         let queryString = `
             SELECT
-                id
-                title
-                color
+                id,
+                title,
+                color,
+                description,
+                beginDate,
+                endDate,
+                userId
             FROM
                 notices
             WHERE 
-                userId = ${userId} AND
-                date_part('month', timestamp ${beginDate})
+                userId = $1
         `
         
-        pool.query(queryString)
+        pool.query(queryString, [userId])
             .then(result => {
                 console.log(result);
                 resolve(result)
@@ -112,38 +113,37 @@ function getNotices(userId, beginDate) {
     })
 }
 
-function getNotice(id) {
-    return new Promise((resolve, reject) => {
-        let queryString = `
-            SELECT
-                title
-                beginDate
-                endDate
-                beginTime
-                endTime
-                color
-                description
-            FROM
-                notices
-            WHERE 
-                id = ${id}
-        `
+// function getNotice(id) {
+//     return new Promise((resolve, reject) => {
+//         let queryString = `
+//             SELECT
+//                 title
+//                 beginDate
+//                 endDate
+//                 color
+//                 description
+//             FROM
+//                 notices
+//             WHERE 
+//                 id = ${id}
+//         `
         
-        pool.query(queryString)
-            .then(result => {
-                console.log(result);
-                resolve(result)
-            })
-            .catch(err => {
-                console.error(err);
-                reject(err)
-            })
-    })
-}
+//         pool.query(queryString)
+//             .then(result => {
+//                 console.log(result);
+//                 resolve(result)
+//             })
+//             .catch(err => {
+//                 console.error(err);
+//                 reject(err)
+//             })
+//     })
+// }
 
 module.exports = {
     createNoticesTable,
     dropNoticesTable,
     addNotice,
-    removeNotice
+    removeNotice,
+    getNotices
 }

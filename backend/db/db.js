@@ -32,10 +32,10 @@ function reInitalizeDB() {
     .catch(err => console.error(err.stack));
 }
 
-dropCalendarTable()
+dropNoticesTable()
   .then(res => {
     console.log(res);
-    return createCalendarTable();
+    return createNoticesTable();
   })
   .then(res => console.log(res))
   .catch(err => console.error(err));

@@ -14,7 +14,7 @@ const routing = (
             <Route path='/home' render = {() => <HomePage />} />
             <Route path='/login' render = {() => <LoginPage />} />
             <Route path='/register' render = {() => <RegistrationPage />} />
-            <Route render = {() => <Redirect to={{pathname:"/login"}} />} />
+            <Route render = {() => <Redirect to={{pathname:"/home"}} />} />
         </Switch>
     </Router>
 )

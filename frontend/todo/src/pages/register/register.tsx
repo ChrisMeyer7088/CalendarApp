@@ -41,7 +41,8 @@ constructor(props: any) {
 }
 
     render() {
-        const { updateConfirmPassword, updateUsername, updatePassword, registerUser, renderPasswordReq, renderUsernameCheck } = this;
+        const { updateConfirmPassword, updateUsername, updatePassword, registerUser, renderPasswordReq, renderUsernameCheck,
+            checkEnterKey } = this;
         const { username, cpassword, password, canRegister, redirectToLogin } = this.state;
 
         if(redirectToLogin) return (<Redirect to="/login"/>)
@@ -57,7 +58,8 @@ constructor(props: any) {
                     <input placeholder="password" value={password} onChange={e => updatePassword(e)} type="password"></input>
                     {renderPasswordReq()}
                     <h3>Confirm Password</h3>
-                    <input placeholder="confirm password" value={cpassword} onChange={e => updateConfirmPassword(e)} type="password"></input>
+                    <input placeholder="confirm password" value={cpassword} onChange={e => updateConfirmPassword(e)} 
+                    type="password" onKeyPress={e => checkEnterKey(e)}></input>
                 </div>
                 <button disabled={!canRegister} onClick={() => registerUser()} className="button-submit" >Create</button>
                 <p>Already have an account? <Link to="/login">Login!</Link></p>
@@ -196,6 +198,12 @@ constructor(props: any) {
                 })
             })
             .catch(err => console.error(err))
+    }
+
+    checkEnterKey = (e: any) => {
+        if(e.key === "Enter") {
+            this.registerUser();
+        }
     }
 }
 

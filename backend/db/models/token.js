@@ -75,6 +75,7 @@ function getActiveToken(tokenValue) {
         let queryString = `
         SELECT
             value
+            userId
         FROM
             token
         WHERE
