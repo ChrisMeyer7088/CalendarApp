@@ -1,7 +1,6 @@
 import React from 'react';
 import { Redirect } from 'react-router-dom';
 import { requestAuthenticateSession } from '../../services/authentication';
-import { reject } from 'q';
 
 interface State {
     userId: string,

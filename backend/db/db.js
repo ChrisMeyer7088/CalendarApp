@@ -32,13 +32,7 @@ function reInitalizeDB() {
     .catch(err => console.error(err.stack));
 }
 
-dropNoticesTable()
-  .then(res => {
-    console.log(res);
-    return createNoticesTable();
-  })
-  .then(res => console.log(res))
-  .catch(err => console.error(err));
+reInitalizeDB();
 
 module.exports = {
   dropTables,

@@ -70,7 +70,7 @@ function createNewUser(username, password) {
     })
 }
 
-function getUser(username, password = "") {
+function getUser(username) {
     return new Promise((resolve, reject) => {
         let queryString = `
             SELECT 
@@ -135,7 +135,7 @@ function compareUserCredentials(existingUser, password) {
     })
 }
 
-function removeUser(username) {
+function removeUserByUsername(username) {
     return new Promise((resolve, reject) => {
         let queryString = `
             DELETE FROM users
@@ -155,5 +155,5 @@ module.exports = {
     getUser,
     checkUserCredentials,
     getUsers,
-    removeUser
+    removeUserByUsername
 }
