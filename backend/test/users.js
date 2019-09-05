@@ -3,7 +3,7 @@ var { createNewUser,
     checkUserCredentials,
     removeUserByUsername } = require("../db/models/users");
 
-describe("#userDBQueries", () => {
+describe("#dbuserQuery", () => {
     context("Creates a valid User Object in the db", () => {
         let username = "TestUser1";
         let password = "Asdy12sua";

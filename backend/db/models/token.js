@@ -52,7 +52,7 @@ function createToken(userId) {
         generateTokenValue(userId)
             .then(tokenValue => pool.query(queryString, [tokenValue, Date.now(), userId]))
             .then(queryResult => checkForActiveToken(userId))
-            .then(activeToken => resolve(activeToken[1]))
+            .then(activeToken => resolve(activeToken))
             .catch(err => reject(err))
     })
 }
@@ -70,7 +70,7 @@ function generateTokenValue(userId) {
     })
 }
 
-function getActiveToken(tokenValue) {
+function getAssociatedUser(tokenValue) {
     return new Promise((resolve, reject) => {
         let queryString = `
         SELECT
@@ -84,22 +84,6 @@ function getActiveToken(tokenValue) {
         LIMIT 1;
         `;
         pool.query(queryString, [tokenValue])
-            .then(result => resolve(result))
-            .catch(err => reject(err))
-    })
-}
-
-function getAssociatedUser(tokenId) {
-    return new Promise((resolve, reject) => {
-        let queryString = `
-        SELECT 
-            userId 
-        FROM 
-            token
-        WHERE
-            id = $1;
-        `;
-        pool.query(queryString, [tokenId])
             .then(result => resolve(result))
             .catch(err => reject(err))
     })
@@ -119,12 +103,26 @@ function checkForActiveToken(userId) {
         pool.query(queryString)
             .then(queryResult => {
                 if(!queryResult.rowCount) {
-                    resolve([false, userId])
+                    resolve('')
                 } else {
-                    resolve([true, queryResult.rows[0].value])
+                    resolve(queryResult.rows[0].value)
                 }
             })
             .catch(err => reject(err))
+    })
+}
+
+function deleteToken(value) {
+    return new Promise((resolve, reject) => {
+        let queryString = `
+        DELETE FROM token
+        WHERE token.value = $1
+        `
+        pool.query(queryString, [value])
+            .then(result => {
+                resolve(result)})
+            .catch(err => {
+                reject(err)})
     })
 }
 
@@ -132,7 +130,7 @@ module.exports = {
     createTokenTable,
     dropTokenTable,
     createToken,
-    getAssociatedUser,
     checkForActiveToken,
-    getActiveToken
+    getAssociatedUser,
+    deleteToken
 }

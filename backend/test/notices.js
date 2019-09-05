@@ -14,7 +14,6 @@ before("Create User Object", () => {
 })
 after("Removing user object", () => {
     return removeUserByUsername(username)
-        .then(result => console.log("Removing users"))
 })
 describe("#dbNoticesQuery", () => {
     context("Adding Valid Notice", () => {
@@ -48,6 +47,25 @@ describe("#dbNoticesQuery", () => {
         })
         it("Removing an existing notice", () => {
             return removeNotice(noticeId)
+                .then(result => expect(result.rowCount).to.equal(1))
+        })
+    })
+    context("Selecting User notices", () => {
+        let noticeId = 0;
+        before("Create Notice to select", () => {
+            let beginDate = getRandomDate();
+            let endDate = new Date(beginDate.getTime() + (getEventLength() * 60 * 60 * 1000));
+            return addNotice("Test Notice", beginDate, endDate, "ffffff", userId, "Test notice")
+                .then(result => getUserNotices(userId))
+                .then(result => {
+                    if(result.rows[0]) noticeId = result.rows[0].id
+                })
+        })
+        after("Remove created notice", () => {
+            return removeNotice(noticeId)
+        })
+        it("Retrieving existing notices", () => {
+            return getUserNotices(userId)
                 .then(result => expect(result.rowCount).to.equal(1))
         })
     })
