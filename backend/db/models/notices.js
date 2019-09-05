@@ -49,16 +49,14 @@ function addNotice(title, beginDate, endDate, color, userId, description = "") {
     return new Promise((resolve, reject) => {
         let queryString = `
             INSERT INTO notices (title, beginDate, endDate, color, userId, description)
-            VALUES(${title}, ${beginDate}, ${endDate}, ${color}, ${userId}, ${description})
+            VALUES($1, $2, $3, $4, $5, $6)
         `
         
-        pool.query(queryString)
+        pool.query(queryString, [title, beginDate, endDate, color, userId, description])
             .then(result => {
-                console.log(result);
                 resolve(result)
             })
             .catch(err => {
-                console.error(err);
                 reject(err)
             })
     })
@@ -73,18 +71,16 @@ function removeNotice(id) {
         
         pool.query(queryString)
             .then(result => {
-                console.log(result);
                 resolve(result)
             })
             .catch(err => {
-                console.error(err);
                 reject(err)
             })
     })
 }
 
 
-function getNotices(userId) {
+function getUserNotices(userId) {
     return new Promise((resolve, reject) => {
         let queryString = `
             SELECT
@@ -103,11 +99,9 @@ function getNotices(userId) {
         
         pool.query(queryString, [userId])
             .then(result => {
-                console.log(result);
                 resolve(result)
             })
             .catch(err => {
-                console.error(err);
                 reject(err)
             })
     })
@@ -145,5 +139,5 @@ module.exports = {
     dropNoticesTable,
     addNotice,
     removeNotice,
-    getNotices
+    getUserNotices
 }

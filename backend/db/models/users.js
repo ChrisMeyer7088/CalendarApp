@@ -106,6 +106,8 @@ function getUsers() {
 
 function checkUserCredentials(username, password) {
     return new Promise((resolve, reject) => {
+        if(!username) throw Error("Username cannot be empty")
+        if(!password) throw Error("Password cannot be empty")
         getUser(username, password)
             .then(queryResult => {
                 if(queryResult.rowCount === 1) {

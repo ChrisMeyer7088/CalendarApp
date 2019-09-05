@@ -1,6 +1,5 @@
 const expect = require("chai").expect;
 var { createNewUser,
-    getUser,
     checkUserCredentials,
     removeUserByUsername } = require("../db/models/users");
 
@@ -49,6 +48,45 @@ describe("#userDBQueries", () => {
                 .then(userId => {
                     expect(userId).to.be.ok;
                 })
+        })
+    })
+    context("Failed User Creation", () => {
+        let username = "";
+        let password = 123;
+        it("Fails adding user to database", () => {
+            return createNewUser(username, password)
+                .catch(err => {
+                    expect(() => {throw err}).to.throw(Error)
+                })
+        })
+    })
+    context("Failed to authorize Credentials", () => {
+        let username = "TestUser3";
+        let password = "Asdy12sua";
+        it("Attempts to verify incorrect credentials", () => {
+            return checkUserCredentials(username, password)
+                .then(isAuthorized => { 
+                   expect(isAuthorized).to.be.false
+                })
+        })
+    })
+    context("Failed to remove invalid username", () => {
+        let username = "InvalidUser";
+        it("Attempts to remove nonexisting username", () => {
+            return removeUserByUsername(username)
+                .then(result => {
+                    expect(result.rowCount).to.equal(0)
+                })
+        })
+    })
+    context("Catching checkUserCredentials error", () => {
+        let username = "";
+        let password = "Asdy12sua";
+        it("Attempts to verify incomplete credentials", () => {
+            return checkUserCredentials(username, password)
+            .catch(err => {
+                expect(() => { throw err }).to.throw(Error, "Username cannot be empty");
+            })
         })
     })
 })

@@ -4,7 +4,7 @@ const { getUsers } = require('../models/users');
 function addMockNotices() {
     for(let i = 0; i < 20; i++) {
         let beginDate = getRandomDate();
-        let endDate = beginDate.getTime() + (getEventLength() * 60 * 60 * 1000)
+        let endDate = new Date(beginDate.getTime() + (getEventLength() * 60 * 60 * 1000))
         getUsers()
             .then(users => {
                 console.log(users)
@@ -12,7 +12,7 @@ function addMockNotices() {
                 addNotice(`Notice Number ${i}`, beginDate, endDate, `ffffff`, users[randomUser].id, "This is mock data")
             })
             .then(result => {
-                
+
             })
     }
 }
@@ -35,4 +35,9 @@ function getEventLength() {
     let probability = Math.floor(Math.random * Math.floor(10));
     if(probability < 7) return getRandomInt(1, 5);
     else return getRandomInt(1,25);
+}
+
+module.exports = {
+    getRandomDate,
+    getEventLength
 }
