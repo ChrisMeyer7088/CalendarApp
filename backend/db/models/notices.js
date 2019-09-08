@@ -107,33 +107,6 @@ function getUserNotices(userId) {
     })
 }
 
-// function getNotice(id) {
-//     return new Promise((resolve, reject) => {
-//         let queryString = `
-//             SELECT
-//                 title
-//                 beginDate
-//                 endDate
-//                 color
-//                 description
-//             FROM
-//                 notices
-//             WHERE 
-//                 id = ${id}
-//         `
-        
-//         pool.query(queryString)
-//             .then(result => {
-//                 console.log(result);
-//                 resolve(result)
-//             })
-//             .catch(err => {
-//                 console.error(err);
-//                 reject(err)
-//             })
-//     })
-// }
-
 module.exports = {
     createNoticesTable,
     dropNoticesTable,

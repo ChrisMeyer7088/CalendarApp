@@ -90,11 +90,13 @@ router.post('/login', (req, res, next) => {
         })
         return;
     }
+    let userId = ''
     //Retrieves The User entry if credentials are valid
     checkUserCredentials(req.body.username, req.body.password)
-        .then(userId => {
-            if(userId) {
-                return checkForActiveToken(userId)
+        .then(fetchedUserId => {
+            if(fetchedUserId) {
+                userId = fetchedUserId
+                return checkForActiveToken(fetchedUserId)
             } else {
                 res.status(200).json({
                     type: "user.login",
@@ -107,18 +109,18 @@ router.post('/login', (req, res, next) => {
                 return;
             }
         })
-        .then(tokenCheckResult => {
-            if(!tokenCheckResult) return;
+        .then(resultQuery => {
+            if(!resultQuery) return;
             //If no active tokens are found generate a token otherwise return the first active token
-            if(!tokenCheckResult[0]) {
-                return createToken(tokenCheckResult[1])
+            if(resultQuery.rowCount === 0) {
+                return createToken(userId)
             } else {
                 res.status(200).json({
                     type: "user.login",
                     data: {
-                        message: "Credentials matched",
+                        message: "Token Found",
                         loggedIn: true,
-                        token: tokenCheckResult[1]
+                        token: resultQuery.rows[0].value
                     },
                     success: true
                 })
@@ -126,12 +128,10 @@ router.post('/login', (req, res, next) => {
         })
         .then(newTokenValue => {
             if(!newTokenValue) return;
-            console.log('At the next then')
-            console.log(newTokenValue)
             res.status(200).json({
                 type: "user.login",
                 data: {
-                    message: "Credentials matched",
+                    message: "Credentials matched, token created",
                     loggedIn: true,
                     token: newTokenValue
                 },

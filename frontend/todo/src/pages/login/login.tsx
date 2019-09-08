@@ -2,12 +2,13 @@ import React from 'react';
 import { Link, Redirect } from 'react-router-dom';
 import './login.css';
 import { PostUser } from '../../interfaces/requests';
-import { requestLoginUser } from '../../services/authentication';
+import { requestLoginUser } from '../../services/userRequests';
 
 interface State {
     username: string,
     password: string,
-    redirectToHome: boolean
+    redirectToHome: boolean,
+    attemptedLogin: boolean
 }
 
 class LoginPage extends React.Component<null, State> {
@@ -17,19 +18,23 @@ class LoginPage extends React.Component<null, State> {
         this.state = {
             username: "",
             password: "",
-            redirectToHome: false
+            redirectToHome: false,
+            attemptedLogin: false
         }
     }
 
     render() {
         const { loginAttempt, state, updateUsername, updatePassword, checkEnterKey } = this;
-        const { username, password, redirectToHome }  = state
+        const { username, password, redirectToHome, attemptedLogin }  = state
         if(redirectToHome) {
             return (<Redirect to="/home"/>)
         }
         return (
             <div className="container-main">
-                <h1 className="h1-title">ToDo App Login</h1>
+                <h1 className="h1-title">Calendar Login</h1>
+                <div hidden={!attemptedLogin}>
+                    <p className="warningText">Invalid Username or Password</p>
+                </div>
                 <div>
                     <h3>UserName</h3>
                     <input value={username} onChange={e => updateUsername(e)} placeholder="username" type="text"></input>
@@ -65,11 +70,19 @@ class LoginPage extends React.Component<null, State> {
         }
         requestLoginUser(requestBody)
             .then(res => {
-                //Redirect to home after successful login
-                sessionStorage.setItem('todoAppToken', res.data.data.token)
-                this.setState({
-                    redirectToHome: true
-                })
+                console.log(res)
+                if(res.data.data.loggedIn) {
+                    sessionStorage.setItem('todoAppToken', res.data.data.token)
+                    this.setState({
+                        redirectToHome: true,
+                        attemptedLogin: false
+                    })
+                } else {
+                    this.setState({
+                        attemptedLogin: true
+                    })
+                }
+                
             })
             .catch(err => {
                 console.error(err)

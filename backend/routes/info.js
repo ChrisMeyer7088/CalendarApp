@@ -1,9 +1,9 @@
 const express = require("express");
 const router = express.Router();
-const { getNotices } = require('../db/models/notices');
+const { getUserNotices } = require('../db/models/notices');
+const { getAssociatedUser } = require('../db/models/token');
 
 router.post('/auth', (req, res, next) => {
-    console.log(req.body)
     if(!req.body.token) {
         res.status(400).json({
             type: "user.authenticate",
@@ -13,10 +13,10 @@ router.post('/auth', (req, res, next) => {
             success: false
         })
     } else {
-        getActiveToken(req.body.token)
+        getAssociatedUser(req.body.token)
             .then(result => {
                 if(result.rowCount) {
-                    return getNotices(result.rows[0].userId)
+                    return getUserNotices(result.rows[0].userId)
                 } else {
                     res.status(200).json({
                         type: "user.authenticate",

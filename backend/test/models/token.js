@@ -1,6 +1,6 @@
 const expect = require('chai').expect
-const {createToken, deleteToken, checkForActiveToken, getAssociatedUser} = require('../db/models/token');
-const { getUser, createNewUser, removeUserByUsername } = require('../db/models/users');
+const {createToken, deleteToken, checkForActiveToken, getAssociatedUser} = require('../../db/models/token');
+const { getUser, createNewUser, removeUserByUsername } = require('../../db/models/users');
 
 let username = "TestTokenUser1";
 let password = "Asdobo12ub"
@@ -48,9 +48,9 @@ describe("#dbTokenQuery", () => {
         })
         it('Finding active token', () => {
             return checkForActiveToken(userId)
-                .then(token => {
-                    expect(token).to.not.equal('');
-                    tokenValue = token
+                .then(returnQuery => {
+                    expect(returnQuery.rowCount).to.not.equal(0);
+                    tokenValue = returnQuery.rows[0].value;
                 })
         })
     })

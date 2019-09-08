@@ -3,7 +3,7 @@ import { Link, Redirect } from 'react-router-dom';
 import './register.css';
 import { PostUser } from '../../interfaces/requests';
 import { CheckUser } from '../../interfaces/responses'
-import { requestRegisterUser, requestCheckUsername } from '../../services/authentication';
+import { requestRegisterUser, requestCheckUsername } from '../../services/userRequests';
 
 interface State {
     username: string,

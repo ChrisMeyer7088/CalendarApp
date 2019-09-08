@@ -102,11 +102,7 @@ function checkForActiveToken(userId) {
         `;
         pool.query(queryString)
             .then(queryResult => {
-                if(!queryResult.rowCount) {
-                    resolve('')
-                } else {
-                    resolve(queryResult.rows[0].value)
-                }
+                resolve(queryResult)
             })
             .catch(err => reject(err))
     })

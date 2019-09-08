@@ -1,6 +1,6 @@
 import React from 'react';
 import { Redirect } from 'react-router-dom';
-import { requestAuthenticateSession } from '../../services/authentication';
+import { requestAuthenticateSession } from '../../services/infoRequests';
 
 interface State {
     userId: string,
@@ -44,7 +44,13 @@ class HomePage extends React.Component<null, State> {
                 }
                 console.log(res)
             })
-            .catch(err => console.error(err))
+            .catch(err => {
+                console.error(err);
+                sessionStorage.removeItem('todoAppToken')
+                this.setState({
+                    redirectToLogin: true
+                })
+            })
     }
 }
 

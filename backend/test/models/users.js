@@ -1,7 +1,7 @@
 const expect = require("chai").expect;
 var { createNewUser,
     checkUserCredentials,
-    removeUserByUsername } = require("../db/models/users");
+    removeUserByUsername } = require("../../db/models/users");
 
 describe("#dbuserQuery", () => {
     context("Creates a valid User Object in the db", () => {

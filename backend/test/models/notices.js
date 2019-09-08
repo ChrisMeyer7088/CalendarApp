@@ -1,7 +1,7 @@
 const expect = require("chai").expect;
-const { addNotice, removeNotice, getUserNotices } = require('../db/models/notices')
-const { getUser, createNewUser, removeUserByUsername } = require('../db/models/users')
-const { getRandomDate, getEventLength} = require('../db/mock/notices')
+const { addNotice, removeNotice, getUserNotices } = require('../../db/models/notices')
+const { getUser, createNewUser, removeUserByUsername } = require('../../db/models/users')
+const { getRandomDate, getEventLength} = require('../../db/mock/notices')
 
 
 let username = "TestNoticeUser1";
