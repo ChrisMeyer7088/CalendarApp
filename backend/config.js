@@ -1,3 +1,5 @@
+//IN ORDER TO RUN PROGRAM USERS MUST CREATE A .ENV FILE IN PROJECT ROOT DIRECTORY SPECIFYING 
+//THE BELOW ENVIRONMENTAL VARIABLES
 const dotenv = require('dotenv');
 const result = dotenv.config();
 if(result.error) {
