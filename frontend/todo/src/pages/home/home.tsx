@@ -1,10 +1,12 @@
 import React from 'react';
 import { Redirect } from 'react-router-dom';
-import { requestAuthenticateSession } from '../../services/infoRequests';
+import { requestUserNotices, requestAuthenticateSession } from '../../services/infoRequests';
 
 interface State {
     userId: string,
-    redirectToLogin: boolean
+    token: string,
+    redirectToLogin: boolean,
+    notices: Object[]
 }
 
 class HomePage extends React.Component<null, State> {
@@ -13,7 +15,9 @@ class HomePage extends React.Component<null, State> {
         super(props);
         this.state = {
             userId: "",
-            redirectToLogin: false
+            token: "",
+            redirectToLogin: false,
+            notices: []
         }
 
         this.authenticateUser();
@@ -37,12 +41,15 @@ class HomePage extends React.Component<null, State> {
         requestAuthenticateSession(sessionStorage.getItem('todoAppToken') || '')
             .then(res => {
                 if(res.data.data.returnToLogin) {
-                    sessionStorage.removeItem('todoAppToken')
+                    this.returnToLogin();
+                } else {
+                    sessionStorage.setItem('userId', res.data.data.userId)
                     this.setState({
-                        redirectToLogin: true
+                        userId: res.data.data.userId,
+                        token: sessionStorage.getItem('todoAppToken') || ''
                     })
+                    this.retrieveNotices();
                 }
-                console.log(res)
             })
             .catch(err => {
                 console.error(err);
@@ -51,6 +58,29 @@ class HomePage extends React.Component<null, State> {
                     redirectToLogin: true
                 })
             })
+    }
+
+    retrieveNotices = () => {
+        const {token, userId} = this.state;
+        requestUserNotices(token, userId)
+            .then(res => {
+                console.log(res)
+                if(res.data.data.returnToLogin) {
+                    this.returnToLogin();
+                } else {
+                    this.setState({
+                        notices: res.data.data.notices
+                    })
+                }
+            })
+            .catch(err => console.error(err))
+    }
+
+    returnToLogin = () => {
+        sessionStorage.removeItem('todoAppToken')
+        this.setState({
+            redirectToLogin: true
+        })
     }
 }
 

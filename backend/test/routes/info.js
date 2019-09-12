@@ -32,6 +32,7 @@ describe("#routesInfo", () => {
                 .then(res => {
                     expect(res.status).to.equal(200);
                     expect(res.body.data.message).to.equal('Authentication Successful')
+                    expect(res.body.data.userId).to.be.a('number')
                 })
         })
         it("Should return Invalid Token", () => {
@@ -51,5 +52,8 @@ describe("#routesInfo", () => {
                     expect(res.status).to.equal(400);
                 })
         })
+    })
+    context("POST /info/notices", () => {
+
     })
 })

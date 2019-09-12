@@ -80,14 +80,13 @@ function getAssociatedUser(tokenValue) {
     return new Promise((resolve, reject) => {
         let queryString = `
         SELECT
-            value
+            value,
             userId
         FROM
             token
         WHERE
             value = $1 AND
             ts > to_timestamp(${Date.now() - (1 + 60 * 60 * 1000)} / 1000.0)
-        LIMIT 1;
         `;
         pool.query(queryString, [tokenValue])
             .then(result => resolve(result))

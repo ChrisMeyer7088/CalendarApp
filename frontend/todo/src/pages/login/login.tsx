@@ -70,7 +70,6 @@ class LoginPage extends React.Component<null, State> {
         }
         requestLoginUser(requestBody)
             .then(res => {
-                console.log(res)
                 if(res.data.data.loggedIn) {
                     sessionStorage.setItem('todoAppToken', res.data.data.token)
                     this.setState({
