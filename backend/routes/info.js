@@ -21,7 +21,7 @@ router.post('/auth', (req, res, next) => {
                     res.status(200).json({
                         type: "user.authenticate",
                         data: {
-                            message: "Token has expired",
+                            message: "Invalid Token",
                             returnToLogin: true
                         },
                         success: true
