@@ -1,28 +1,20 @@
+process.env.NODE_ENV = 'test'
 const expect = require("chai").expect;
 const { addNotice, removeNotice, getUserNotices } = require('../../db/models/notices')
 const { getUser, createNewUser, removeUserByUsername } = require('../../db/models/users')
 const { getRandomDate, getEventLength} = require('../../db/mock/notices')
-
+require('../_setup')
 
 let username = "TestNoticeUser1";
 let password = "Asdobo12ub"
 let userId = 0;
-before("Create User Object", () => {
+before("Create user", () => {
     return createNewUser(username, password)
     .then(result => getUser(username))
     .then(result => userId = result.rows[0].id)
 })
-after("Removing user object", () => {
-    return removeUserByUsername(username)
-})
 describe("#dbNoticesQuery", () => {
     context("Adding Valid Notice", () => {
-        after("Remove test user created", () => {
-            getUserNotices(userId)
-                .then(result => {
-                    if(result.rows[0]) return removeNotice(result.rows[0].id)
-                })
-        })
         it("Attempts to create a new notice", () => {
             let beginDate = getRandomDate();
             let endDate = new Date(beginDate.getTime() + (getEventLength() * 60 * 60 * 1000));
@@ -51,22 +43,18 @@ describe("#dbNoticesQuery", () => {
         })
     })
     context("Selecting User notices", () => {
-        let noticeId = 0;
-        before("Create Notice to select", () => {
+        it("Retrieving existing notices", () => {
+            //Retrieve User Notices before and after adding one compare
             let beginDate = getRandomDate();
             let endDate = new Date(beginDate.getTime() + (getEventLength() * 60 * 60 * 1000));
-            return addNotice("Test Notice", beginDate, endDate, "ffffff", userId, "Test notice")
-                .then(result => getUserNotices(userId))
-                .then(result => {
-                    if(result.rows[0]) noticeId = result.rows[0].id
-                })
-        })
-        after("Remove created notice", () => {
-            return removeNotice(noticeId)
-        })
-        it("Retrieving existing notices", () => {
+            let numberOfNotices = 0;
             return getUserNotices(userId)
-                .then(result => expect(result.rowCount).to.equal(1))
+            .then(result => {
+                numberOfNotices = result.rowCount;
+                return addNotice("Test Notice", beginDate, endDate, "ffffff", userId, "Test notice")
+            })
+            .then(result => getUserNotices(userId))
+            .then(result => expect(result.rowCount).to.equal(numberOfNotices + 1))           
         })
     })
 })

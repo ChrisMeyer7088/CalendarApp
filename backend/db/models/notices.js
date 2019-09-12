@@ -1,11 +1,12 @@
 const pg = require('pg');
-const Pool = require('pg').Pool
+const { DBHost, DBName, DBPass, DBUser } = require('../../config')
+const Pool = pg.Pool;
 const pool = new Pool({
-  user: 'todoapp',
-  host: 'localhost',
-  database: 'todoapp',
-  password: '1234!@#$qwerASD',
-  port: 5432,
+    user: DBUser,
+    host: DBHost,
+    database: DBName,
+    password: DBPass,
+    port: process.env.DB_PORT
 })
 
 const deleteNoticesTableQuery = `

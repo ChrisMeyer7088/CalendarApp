@@ -1,12 +1,13 @@
 const pg = require('pg');
 const bcrypt = require('bcrypt')
-const Pool = require('pg').Pool
+const { DBHost, DBName, DBPass, DBUser } = require('../../config')
+const Pool = pg.Pool;
 const pool = new Pool({
-  user: 'todoapp',
-  host: 'localhost',
-  database: 'todoapp',
-  password: '1234!@#$qwerASD',
-  port: 5432,
+    user: DBUser,
+    host: DBHost,
+    database: DBName,
+    password: DBPass,
+    port: process.env.DB_PORT
 })
 
 const deleteUsersTableQuery = `
@@ -131,7 +132,7 @@ function compareUserCredentials(existingUser, password) {
             if(hash === existingUser["passwordhash"]) {
                 resolve(existingUser["id"]);
             } else {
-                resolve('');
+                resolve(false);
             }
         })
     })

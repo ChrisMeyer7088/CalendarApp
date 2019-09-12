@@ -1,12 +1,13 @@
 const pg = require('pg');
 const bcrypt = require('bcrypt')
-const Pool = require('pg').Pool
+const { DBHost, DBName, DBPass, DBUser } = require('../../config')
+const Pool = pg.Pool;
 const pool = new Pool({
-  user: 'todoapp',
-  host: 'localhost',
-  database: 'todoapp',
-  password: '1234!@#$qwerASD',
-  port: 5432,
+    user: DBUser,
+    host: DBHost,
+    database: DBName,
+    password: DBPass,
+    port: process.env.DB_PORT
 })
 
 const deleteTokenTableQuery = `
@@ -45,14 +46,19 @@ function createTokenTable () {
 
 function createToken(userId) {
     return new Promise((resolve, reject) => {
+        let value = '';
         let queryString = `
         INSERT INTO token (value, ts, userId)
             VALUES ($1, to_timestamp($2 / 1000.0), $3);
         `;
         generateTokenValue(userId)
-            .then(tokenValue => pool.query(queryString, [tokenValue, Date.now(), userId]))
-            .then(queryResult => checkForActiveToken(userId))
-            .then(activeToken => resolve(activeToken))
+            .then(tokenValue => {
+                value = tokenValue;
+                return pool.query(queryString, [tokenValue, Date.now(), userId])
+            })
+            .then(queryResult => {
+                resolve(value)
+            })
             .catch(err => reject(err))
     })
 }

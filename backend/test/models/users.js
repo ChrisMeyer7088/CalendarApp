@@ -1,16 +1,12 @@
+process.env.NODE_ENV = 'test'
 const expect = require("chai").expect;
-var { createNewUser,
-    checkUserCredentials,
-    removeUserByUsername } = require("../../db/models/users");
+var { createNewUser, checkUserCredentials, removeUserByUsername } = require("../../db/models/users");
+require('../_setup')
 
 describe("#dbuserQuery", () => {
     context("Creates a valid User Object in the db", () => {
-        let username = "TestUser1";
+        let username = "TestUsersUser1";
         let password = "Asdy12sua";
-        after("Deletes the user added", () => {
-            return removeUserByUsername(username)
-                .catch(err => console.error(err))
-        })
         it("Adds a valid user to the database", () => {
             return createNewUser(username, password)
                 .then(result => {
@@ -23,7 +19,6 @@ describe("#dbuserQuery", () => {
         let password = "Asdy12sua";
         before("Adds the mock user to database", () => {
             return createNewUser(username, password)
-                .catch(err => console.error(err))
         })
         it("Removes a valid user from the database", () => {
             return removeUserByUsername(username)
@@ -37,11 +32,6 @@ describe("#dbuserQuery", () => {
         let password = "Asdy12sua";
         before("Adds the mock user to database", () => {
             return createNewUser(username, password)
-                .catch(err => console.error(err))
-        })
-        after("Deletes the user added", () => {
-            return removeUserByUsername(username)
-                .catch(err => console.error(err))
         })
         it("Verifies the user credentials", () => {
             return checkUserCredentials(username, password)
@@ -61,10 +51,13 @@ describe("#dbuserQuery", () => {
         })
     })
     context("Failed to authorize Credentials", () => {
-        let username = "TestUser3";
+        let username = "TestUser4";
         let password = "Asdy12sua";
+        before("Adds the mock user to database", () => {
+            return createNewUser(username, password)
+        })
         it("Attempts to verify incorrect credentials", () => {
-            return checkUserCredentials(username, password)
+            return checkUserCredentials(username, "password")
                 .then(isAuthorized => { 
                    expect(isAuthorized).to.be.false
                 })

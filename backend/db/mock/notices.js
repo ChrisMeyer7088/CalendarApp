@@ -39,5 +39,3 @@ module.exports = {
     getEventLength,
     addMockNotices
 }
-
-addMockNotices();

@@ -4,7 +4,8 @@
   "description": "Nodejs Express API backend",
   "main": "index.js",
   "scripts": {
-    "test": "mocha"
+    "test": "mocha",
+    "prod": "env NODE_ENV=production node index.js"
   },
   "author": "Chris Meyer",
   "license": "MIT",

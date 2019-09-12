@@ -21,18 +21,19 @@ function createTables() {
 
 function reInitalizeDB() {
   //Data is dependent promises must be executed in a certain order
-  dropNoticesTable()
-    .then(dropTokenTable)
-    .then(dropCalendarTable)
-    .then(dropUsersTable)
-    .then(createUsersTable)
-    .then(createTokenTable)
-    .then(createNoticesTable)
-    .then(createCalendarTable)
-    .catch(err => console.error(err.stack));
+  return new Promise((resolve, reject) => {
+    dropNoticesTable()
+    .then(result => dropTokenTable())
+    .then(result => dropCalendarTable())
+    .then(result => dropUsersTable())
+    .then(result => createUsersTable())
+    .then(result => createTokenTable())
+    .then(result => createNoticesTable())
+    .then(result => createCalendarTable())
+    .then(result => resolve(result))
+    .catch(err => reject(err));
+  })
 }
-
-reInitalizeDB();
 
 module.exports = {
   dropTables,

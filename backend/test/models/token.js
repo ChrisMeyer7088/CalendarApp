@@ -1,29 +1,24 @@
+process.env.NODE_ENV = 'test'
 const expect = require('chai').expect
 const {createToken, deleteToken, checkForActiveToken, getAssociatedUser} = require('../../db/models/token');
 const { getUser, createNewUser, removeUserByUsername } = require('../../db/models/users');
+require('../_setup')
+
 
 let username = "TestTokenUser1";
 let password = "Asdobo12ub"
 let userId = 0;
-before("Create User Object", () => {
+before("Clear DB and create user", () => {
     return createNewUser(username, password)
     .then(result => getUser(username))
     .then(result => userId = result.rows[0].id)
 })
-after("Removing user object", () => {
-    return removeUserByUsername(username)
-})
 describe("#dbTokenQuery", () => {
     context('Creating token query', () => {
-        let tokenValue = ''
-        after("Removing created token", () => {
-            return deleteToken(tokenValue)
-        })
         it("Attempting to create token", () => {
             return createToken(userId)
-                .then(token => {
-                    expect(token).to.not.equal('')
-                    tokenValue = token;
+                .then(tokenValue => {
+                    expect(tokenValue).to.not.equal('')
                 })
         })
     })
@@ -31,7 +26,9 @@ describe("#dbTokenQuery", () => {
         let tokenValue = ''
         before("Creating token to remove for test case", () => {
             return createToken(userId)
-                .then(token => tokenValue = token)
+                .then(token => {
+                    tokenValue = token
+                })
         })
         it("Attempting to delete token", () => {
             return deleteToken(tokenValue)
@@ -39,18 +36,13 @@ describe("#dbTokenQuery", () => {
         })
     })
     context("Check for active token with userId", () => {
-        let tokenValue = ''
         before("Creating a token to be found", () => {
             return createToken(userId)
-        })
-        after('Remove created token', () => {
-            return deleteToken(tokenValue)
         })
         it('Finding active token', () => {
             return checkForActiveToken(userId)
                 .then(returnQuery => {
                     expect(returnQuery.rowCount).to.not.equal(0);
-                    tokenValue = returnQuery.rows[0].value;
                 })
         })
     })
@@ -59,9 +51,6 @@ describe("#dbTokenQuery", () => {
         before("Create token to retrieved", () => {
             return createToken(userId)
                 .then(token => tokenValue = token)
-        })
-        after("Remove created token", () => {
-            return deleteToken(tokenValue)
         })
         it("Attempting to retrieve userId by token value", () => {
             return getAssociatedUser(tokenValue)

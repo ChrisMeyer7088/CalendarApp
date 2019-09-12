@@ -1,8 +1,10 @@
+process.env.NODE_ENV = 'test'
 const chai = require('chai');
 const should = chai.should();
 const chaiHTTP = require('chai-http');
 const server = require('../../index');
 const { removeUserByUsername } = require('../../db/models/users')
+require('../_setup')
 
 chai.use(chaiHTTP);
 
@@ -20,7 +22,6 @@ describe('#routesUser', () => {
                 .post('/user/register')
                 .send(data)
                 .end((err, res) => {
-                    console.log(res.body.data)
                     res.should.have.status(200);
                 })
         })
