@@ -93,6 +93,7 @@ router.post('/user', (req, res, next) => {
             }
         })
         .catch(err => {
+            console.log(err)
             res.status(500).json({
                 type: "user.username",
                 data: {

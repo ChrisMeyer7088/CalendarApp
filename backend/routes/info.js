@@ -1,99 +1,45 @@
 const express = require("express");
 const router = express.Router();
 const { getUserNotices } = require('../db/models/notices');
-const { getAssociatedUser } = require('../db/models/token');
+const { authenticateToken } = require('../services/infoServices')
 
-router.post('/auth', (req, res, next) => {
-    if(!req.body.token) {
-        res.status(400).json({
-            type: "user.authenticate",
-            data: {
-                message: "Invalid request"
-            },
-            success: false
+router.get("/notices", authenticateToken, (req, res, next) => {
+    getUserNotices(req.body.userId)
+        .then(result => {
+            if(!result) return;
+            res.status(200).json({
+                type: "info.notices",
+                data: {
+                    message: "Notices Retrieved",
+                    returnToLogin: false,
+                    notices: result.rows
+                },
+                success: true
+            })
         })
-    } else {
-        getAssociatedUser(req.body.token)
-            .then(result => {
-                if(result.rowCount) {
-                    res.status(200).json({
-                        type: "user.authenticate",
-                        data: {
-                            message: "Authentication Successful",
-                            returnToLogin: false,
-                            userId: result.rows[0].userid
-                        },
-                        success: true
-                    })
-                } else {
-                    res.status(200).json({
-                        type: "user.authenticate",
-                        data: {
-                            message: "Invalid Token",
-                            returnToLogin: true
-                        },
-                        success: true
-                    })
-                }
+        .catch(err => {
+            res.status(500).json({
+                type: "info.notices",
+                data: {
+                    message: "Something went wrong"
+                },
+                success: false
             })
-            .catch(err => {
-                res.status(500).json({
-                    type: "user.authenticate",
-                    data: {
-                        message: "Something went wrong"
-                    },
-                    success: false
-                })
-            })
-    }
+        })
 })
 
-router.post("/notices", (req, res, next) => {
-    if(!req.body.token || !req.body.userId) {
+router.post("notice", authenticateToken, (req, res, next) => {
+    let notice = req.body.notice;
+    if(!notice || !notice.title || !notice.beginDate || !notice.endDate || !notice.color || !notice.userId) {
         res.status(400).json({
-            type: "user.notices",
+            type: "info.addnotice",
             data: {
-                message: "Invalid request"
+                message: "Invalid notice"
             },
             success: false
         })
     } else {
-        getAssociatedUser(req.body.token)
-            .then(result => {
-                if(result.rowCount) {
-                    return getUserNotices(req.body.userId)
-                } else {
-                    res.status(200).json({
-                        type: "user.notices",
-                        data: {
-                            message: "Invalid Token",
-                            returnToLogin: true
-                        },
-                        success: true
-                    })
-                }
-            })
-            .then(result => {
-                if(!result) return;
-                res.status(200).json({
-                    type: "user.notices",
-                    data: {
-                        message: "Notices Retrieved",
-                        returnToLogin: false,
-                        notices: result.rows
-                    },
-                    success: true
-                })
-            })
-            .catch(err => {
-                res.status(500).json({
-                    type: "user.notices",
-                    data: {
-                        message: "Something went wrong"
-                    },
-                    success: false
-                })
-            })
+        console.log('Adding valid notice')
     }
 })
 

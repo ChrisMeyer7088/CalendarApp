@@ -1,11 +1,14 @@
 import axios from 'axios';
+import { Notice } from '../interfaces/requests'
 
 const baseServerURL = "http://localhost:8000/info/"
 
-export const requestAuthenticateSession = (token: string) => {
-    return axios.post(baseServerURL + "auth", {token})
+export const getUserNotices = (token: string) => {
+    axios.defaults.headers.common['Authorization'] = token
+    return axios.get(baseServerURL + "notices")
 }
 
-export const requestUserNotices = (token: string, userId: string) => {
-    return axios.post(baseServerURL + "notices", {token, userId})
+export const postNotice = (token: string, notice: Notice) => {
+    axios.defaults.headers.common['Authorization'] = token
+    return axios.post(baseServerURL + "notice", {notice})
 }

@@ -8,7 +8,7 @@ interface State {
     username: string,
     password: string,
     redirectToHome: boolean,
-    attemptedLogin: boolean
+    attemptedLogin: boolean,
 }
 
 class LoginPage extends React.Component<null, State> {
@@ -19,7 +19,7 @@ class LoginPage extends React.Component<null, State> {
             username: "",
             password: "",
             redirectToHome: false,
-            attemptedLogin: false
+            attemptedLogin: false,
         }
     }
 
@@ -27,7 +27,9 @@ class LoginPage extends React.Component<null, State> {
         const { loginAttempt, state, updateUsername, updatePassword, checkEnterKey } = this;
         const { username, password, redirectToHome, attemptedLogin }  = state
         if(redirectToHome) {
-            return (<Redirect to="/home"/>)
+            return (
+            <Redirect to={{pathname: "/home"}} />
+            )
         }
         return (
             <div className="container-main">
@@ -71,10 +73,10 @@ class LoginPage extends React.Component<null, State> {
         requestLoginUser(requestBody)
             .then(res => {
                 if(res.data.data.loggedIn) {
-                    sessionStorage.setItem('todoAppToken', res.data.data.token)
+                    sessionStorage.setItem("token", res.data.data.token)
                     this.setState({
                         redirectToHome: true,
-                        attemptedLogin: false
+                        attemptedLogin: false,
                     })
                 } else {
                     this.setState({

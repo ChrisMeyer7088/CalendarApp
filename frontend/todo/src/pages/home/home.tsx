@@ -1,6 +1,7 @@
 import React from 'react';
 import { Redirect } from 'react-router-dom';
-import { requestUserNotices, requestAuthenticateSession } from '../../services/infoRequests';
+import { getUserNotices } from '../../services/infoRequests';
+import AddNoticeButton from '../../components/addNoticeButton/addNoticeButton';
 
 interface State {
     userId: string,
@@ -15,16 +16,16 @@ class HomePage extends React.Component<null, State> {
         super(props);
         this.state = {
             userId: "",
-            token: "",
+            token: sessionStorage.getItem("token") || "",
             redirectToLogin: false,
             notices: []
         }
-
-        this.authenticateUser();
+        this.retrieveNotices();
     }
 
     render() {
-        const { redirectToLogin } = this.state
+        const { redirectToLogin, token } = this.state
+        const { returnToLogin } = this;
 
         if(redirectToLogin) {
             return (<Redirect to="/login"/>)
@@ -32,39 +33,14 @@ class HomePage extends React.Component<null, State> {
         return (
             <div>
                 <h1>Welcome to the ToDoApp</h1>
+                <AddNoticeButton token={token} returnToLogin={returnToLogin} />
             </div>
         )
     }
 
-    //Check for valid user token and retrieve user data from token
-    authenticateUser = () => {
-        requestAuthenticateSession(sessionStorage.getItem('todoAppToken') || '')
-            .then(res => {
-                if(res.data.data.returnToLogin) {
-                    this.returnToLogin();
-                } else {
-                    sessionStorage.setItem('userId', res.data.data.userId)
-                    this.setState({
-                        userId: res.data.data.userId,
-                        token: sessionStorage.getItem('todoAppToken') || ''
-                    })
-                    this.retrieveNotices();
-                }
-            })
-            .catch(err => {
-                console.error(err);
-                sessionStorage.removeItem('todoAppToken')
-                this.setState({
-                    redirectToLogin: true
-                })
-            })
-    }
-
     retrieveNotices = () => {
-        const {token, userId} = this.state;
-        requestUserNotices(token, userId)
+        getUserNotices(this.state.token)
             .then(res => {
-                console.log(res)
                 if(res.data.data.returnToLogin) {
                     this.returnToLogin();
                 } else {
@@ -73,11 +49,15 @@ class HomePage extends React.Component<null, State> {
                     })
                 }
             })
-            .catch(err => console.error(err))
+            .catch(err => {
+                if(err.response.status === 400) {
+                    this.returnToLogin();
+                }
+            })
     }
 
     returnToLogin = () => {
-        sessionStorage.removeItem('todoAppToken')
+        sessionStorage.removeItem('token')
         this.setState({
             redirectToLogin: true
         })
