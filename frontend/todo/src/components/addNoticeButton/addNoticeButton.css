@@ -1,0 +1,64 @@
+.popup-content {
+    text-align: left;
+    margin: 6px;
+    width: 100%;
+    font-size: 14px;
+}
+
+.popup-item {
+    margin-bottom: 6px;
+}
+
+.popup-title-input {
+    border: none;
+    cursor: text;
+    font-size: 22px;
+    width: 100%;
+}
+
+.popup-title-input {
+    outline-width: 0;
+}
+
+.popup-header {
+    margin-left: 25px;
+    margin-right: 18px;
+}
+
+.popup-header-underline{
+    border-bottom: 1px solid rgba(0,0,0,0.3);
+    margin: 5px 0px;
+}
+
+.popup-header-highlight {
+    border-color: rgba(51, 121, 251, 0.781);
+    border-width: 2px;
+    transition: border .2s ease-in-out;
+}
+
+input[type=date]::-webkit-inner-spin-button {
+    -webkit-appearance: none;
+    display: none;
+}
+
+input[type=date]::-webkit-calendar-picker-indicator {
+    -webkit-appearance: none;
+    display: none;
+}
+
+.popup-date {
+    border: none;
+    -webkit-appearance: none;
+    padding: 0;
+    margin: 0;
+}
+
+.popup-date-hyphen {
+    margin: 0px 24px;
+}
+
+#container-popup-date {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+}

@@ -7,7 +7,8 @@ interface State {
     userId: string,
     token: string,
     redirectToLogin: boolean,
-    notices: Object[]
+    notices: Object[],
+    selectedDate: Date
 }
 
 class HomePage extends React.Component<null, State> {
@@ -18,14 +19,15 @@ class HomePage extends React.Component<null, State> {
             userId: "",
             token: sessionStorage.getItem("token") || "",
             redirectToLogin: false,
-            notices: []
+            notices: [],
+            selectedDate: new Date()
         }
         this.retrieveNotices();
     }
 
     render() {
-        const { redirectToLogin, token } = this.state
         const { returnToLogin } = this;
+        const { redirectToLogin, token, selectedDate } = this.state
 
         if(redirectToLogin) {
             return (<Redirect to="/login"/>)
@@ -33,7 +35,7 @@ class HomePage extends React.Component<null, State> {
         return (
             <div>
                 <h1>Welcome to the ToDoApp</h1>
-                <AddNoticeButton token={token} returnToLogin={returnToLogin} />
+                <AddNoticeButton token={token} returnToLogin={returnToLogin} selectedDate={selectedDate}/>
             </div>
         )
     }

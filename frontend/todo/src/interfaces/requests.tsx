@@ -8,5 +8,5 @@ export interface Notice {
     beginDate: Date,
     endDate: Date,
     color: string,
-    description?: string,
+    description: string,
 }
