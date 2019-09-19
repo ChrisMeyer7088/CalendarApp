@@ -45,5 +45,13 @@ describe("#routesInfo", () => {
                     expect(res.body.data.returnToLogin).to.equal(true)
                 })
         })
+        it("Should return Request must have a valid token", () => {
+            chai.request(server)
+                .get('/info/notices')
+                .then(res => {
+                    expect(res.status).to.equal(400);
+                    expect(res.body.data.message).to.equal('Request must have a valid token')
+                })
+        })
     })
 })
