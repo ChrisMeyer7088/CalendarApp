@@ -8,9 +8,9 @@ require('../_setup')
 chai.use(chaiHTTP);
 
 describe("#routesInfo", () => {
-    context("POST /info/auth", () => {
+    context("GET /info/notices", () => {
         let tokenValue = ''
-        before("Register and login a user and retireve the token", () => {
+        before("Register and login a user and retireve the notices", () => {
             let data = {
                 username: "AuthUser1",
                 password: "Asdus72Ds"
@@ -25,35 +25,25 @@ describe("#routesInfo", () => {
                 })
                 .then(res => tokenValue = res.body.data.token)
         })
-        it("Should return Authentication Successful", () => {
+        it("Should return Notices Retrieved", () => {
             chai.request(server)
-                .post('/info/auth')
-                .send({token: tokenValue})
+                .get('/info/notices')
+                .set('Authorization', tokenValue)
                 .then(res => {
                     expect(res.status).to.equal(200);
-                    expect(res.body.data.message).to.equal('Authentication Successful')
-                    expect(res.body.data.userId).to.be.a('number')
+                    expect(res.body.data.message).to.equal('Notices Retrieved')
+                    expect(res.body.data.notices).to.be.an('array')
                 })
         })
         it("Should return Invalid Token", () => {
             chai.request(server)
-                .post('/info/auth')
-                .send({token: "Invalid Token"})
+                .get('/info/notices')
+                .set('Authorization', "InvalidToken")
                 .then(res => {
                     expect(res.status).to.equal(200);
-                    expect(res.body.data.message).to.equal('Invalid Token')                    
+                    expect(res.body.data.message).to.equal('Invalid Token')
+                    expect(res.body.data.returnToLogin).to.equal(true)
                 })
         })
-        it("Should return a status code of 400", () => {
-            chai.request(server)
-                .post('/info/auth')
-                .send({})
-                .then(res => {
-                    expect(res.status).to.equal(400);
-                })
-        })
-    })
-    context("POST /info/notices", () => {
-
     })
 })
