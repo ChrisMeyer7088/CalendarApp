@@ -4,6 +4,7 @@ import { postNotice } from '../../services/infoRequests';
 import { Notice } from '../../interfaces/requests';
 import Popup from 'reactjs-popup';
 import {FocusEvent} from 'react'
+import TimePicker from '../timepicker/timepicker';
 
 interface Props {
     token: string,
@@ -13,21 +14,7 @@ interface Props {
 
 interface State {
     notice: Notice
-    beginTime: Time,
-    endTime: Time,
     headerSelected: boolean
-}
-
-
-interface Time {
-    minutes: number,
-    hours: number,
-    AMPMString: AMPM
-}
-
-enum AMPM {
-    AM = "AM",
-    PM = "PM"
 }
 
 class AddNoticeButton extends React.Component<Props, State> {
@@ -44,46 +31,37 @@ class AddNoticeButton extends React.Component<Props, State> {
                 color: "",
                 description: ""
             },
-            beginTime: {
-                hours: beginDate.getHours(),
-                minutes: beginDate.getMinutes(),
-                AMPMString: this.AMPMLogic(beginDate.getHours())
-            },
-            endTime: {
-                hours: endDate.getHours(),
-                minutes: endDate.getMinutes(),
-                AMPMString: this.AMPMLogic(endDate.getHours())
-            },
             headerSelected: false
         }
     }
 
     render() {
-        const { addNotice, renderTitle, dateToStringFormat, renderStartDate, renderEndDate, renderDescription, formatHours,
-        formatMinutes, inputFocus, inputBlur } = this;
-        const { beginTime, endTime, headerSelected} = this.state;
-        const { title, beginDate, endDate, color, description } = this.state.notice;
+        const { renderTitle, dateToStringFormat, renderStartDate, renderEndDate, renderDescription,
+             inputFocus, inputBlur } = this;
+        const { headerSelected} = this.state;
+        const { title, beginDate, endDate, description } = this.state.notice;
         let beginDateFormatted = dateToStringFormat(beginDate)
         let endDateFormatted = dateToStringFormat(endDate)
+
         return(
             <div>
                 <Popup trigger={<button>Create Event</button>} modal position="top center">
                     <div className="popup-content">
                         <div className="popup-item popup-header">
-                            <input onFocus={e => inputFocus(e)} onBlur={e => inputBlur(e)} autoComplete="off" className="popup-title-input" type="text" value={title} placeholder="Event Title" 
-                            onChange={e => renderTitle(e)} tabIndex={0}></input>
+                            <input onFocus={e => inputFocus(e)} onBlur={e => inputBlur(e)} autoComplete="off" className="popup-title-input" 
+                            type="text" value={title} placeholder="Event Title" onChange={e => renderTitle(e)} tabIndex={0}></input>
                             <div className={`popup-header-underline ${headerSelected ? "popup-header-highlight" : ""}`}></div>
                         </div>
-                        <div className="popup-item" id="container-popup-date">
-                            <div>
+                        <div className="popup-item" id="container-popup-dates">
+                            <div className="container-popup-date">
                                 <input className="popup-date" required={true} onChange={e => renderStartDate(e)} value={beginDateFormatted} type="date"></input>
-                                {formatHours(beginTime.hours)}:{formatMinutes(beginTime.minutes)} {beginTime.AMPMString}
+                                <TimePicker />
                             </div>
                             <span className="popup-date-hyphen">-</span>
-                            <div className="container-popup-right-date">
+                            <div className="container-popup-date">
                                 <input className="popup-date" required={true} onChange={e => renderEndDate(e)} 
                                 min={beginDateFormatted} value={endDateFormatted} type="date"></input>
-                                {formatHours(endTime.hours)}:{formatMinutes(endTime.minutes)} {endTime.AMPMString}
+                                <TimePicker />
                             </div>
                         </div>
                         <div className="popup-item">
@@ -102,25 +80,6 @@ class AddNoticeButton extends React.Component<Props, State> {
         this.setState({
             notice
         })
-    }
-
-    renderStartTime = (event: any) => {
-        let beginTime = this.state.beginTime;
-        // beginTime.hours = event.target.value
-    }
-
-    renderEndTime = (event: any) => {
-
-    }
-
-    formatHours = (hours: number) => {
-        if(hours > 12) return hours - 12
-        return hours
-    }
-
-    formatMinutes = (minutes: number) => {
-        if(minutes < 10) return `0${minutes}`;
-        return minutes;
     }
 
     renderStartDate = (event: any) => {
@@ -181,11 +140,6 @@ class AddNoticeButton extends React.Component<Props, State> {
         this.setState({
             headerSelected: true
         })
-    }
-
-    AMPMLogic = (hours: number): AMPM => {
-        if(hours > 12) return AMPM.PM;
-        return AMPM.AM;
     }
 
     addNotice = () => {

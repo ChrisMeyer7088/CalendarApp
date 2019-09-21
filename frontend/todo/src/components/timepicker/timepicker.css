@@ -1,0 +1,41 @@
+.popup-time{
+  width: 60px;
+  font-size: 15px;
+}
+
+.popup-time:focus {
+  outline: none;
+  background-color: rgb(230, 230, 230);
+}
+
+.popup-inner {
+  overflow: auto;
+  height: 182px;
+  width: 100px;
+  margin: auto;  
+  border-radius: 20px;  
+  background: white;
+  padding-left: 0px;
+  list-style: none;
+}
+
+.popup {  
+  position: fixed; 
+  margin: auto;  
+  background-color: white;  
+  border: black 1px solid;
+}  
+
+.time-selection-item:hover {
+  background-color: rgb(230, 230, 230);
+  cursor: pointer;
+}
+
+.time-selection-item {
+  height: 18px;
+  padding-top: 2px;
+}
+
+.container-popup-time {
+  display: inline;
+}
