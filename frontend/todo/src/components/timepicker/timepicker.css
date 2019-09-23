@@ -1,11 +1,21 @@
 .popup-time{
   width: 60px;
   font-size: 15px;
+  border: none;
+  padding: 5px;
+  border-radius: 8px;
+  transition: box-shadow 0.3s ease-in-out;
+}
+
+.popup-time:hover {
+  background-color: rgb(240, 240, 240);
+  box-shadow: 1px 1px 5px rgba(0, 0, 0, 0.5);
 }
 
 .popup-time:focus {
   outline: none;
-  background-color: rgb(230, 230, 230);
+  background-color: rgb(240, 240, 240);
+  box-shadow: 4px 4px 5px rgba(0, 0, 0, 0.5);
 }
 
 .popup-inner {
@@ -20,14 +30,16 @@
 }
 
 .popup {  
-  position: fixed; 
+  position: absolute;
   margin: auto;  
   background-color: white;  
-  border: black 1px solid;
+  top: 6px;
+  box-shadow: 10px 10px 5px rgba(0, 0, 0, 0.5);
+  border-radius: 12px;
 }  
 
 .time-selection-item:hover {
-  background-color: rgb(230, 230, 230);
+  background-color: rgb(240, 240, 240);
   cursor: pointer;
 }
 
@@ -37,5 +49,10 @@
 }
 
 .container-popup-time {
-  display: inline;
+  display: inline-block;
+  margin: 0px 2px;
+}
+
+.container-popup {
+  position: relative;
 }

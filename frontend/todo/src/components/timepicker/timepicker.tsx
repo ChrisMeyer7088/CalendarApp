@@ -49,14 +49,16 @@ class TimePicker extends React.Component<Props, State> {
         if(userInputString || isUserTypingTime) beginTimeString = userInputString;
 
         return(
-            <div ref={this.timeRef} onClick={e => togglePopup(true)} className="container-popup-time">
-                <input className="popup-time" onBlur={e => validUserTypedTime(true)} 
-                onChange={e => updateUserInputString(e)} value={beginTimeString} type="text"></input>
-                <div hidden={!showTimeSelector}>
-                    <div className="popup">
-                        <ul className="popup-inner">
-                            {renderTime()}
-                        </ul>
+            <div className="container-popup-time">
+                <div ref={this.timeRef} onClick={e => togglePopup(true)}>
+                    <input className="popup-time" onBlur={e => validUserTypedTime(true)} 
+                    onChange={e => updateUserInputString(e)} value={beginTimeString} type="text"></input>
+                    <div hidden={!showTimeSelector} className="container-popup">
+                        <div className="popup">
+                            <ul className="popup-inner">
+                                {renderTime()}
+                            </ul>
+                        </div>
                     </div>
                 </div>
             </div>

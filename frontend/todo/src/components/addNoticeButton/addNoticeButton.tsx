@@ -36,8 +36,7 @@ class AddNoticeButton extends React.Component<Props, State> {
     }
 
     render() {
-        const { renderTitle, dateToStringFormat, renderStartDate, renderEndDate, renderDescription,
-             inputFocus, inputBlur } = this;
+        const { renderTitle, dateToStringFormat, renderStartDate, renderEndDate, renderDescription } = this;
         const { headerSelected} = this.state;
         const { title, beginDate, endDate, description } = this.state.notice;
         let beginDateFormatted = dateToStringFormat(beginDate)
@@ -48,9 +47,8 @@ class AddNoticeButton extends React.Component<Props, State> {
                 <Popup trigger={<button>Create Event</button>} modal position="top center">
                     <div className="popup-content">
                         <div className="popup-item popup-header">
-                            <input onFocus={e => inputFocus(e)} onBlur={e => inputBlur(e)} autoComplete="off" className="popup-title-input" 
-                            type="text" value={title} placeholder="Event Title" onChange={e => renderTitle(e)} tabIndex={0}></input>
-                            <div className={`popup-header-underline ${headerSelected ? "popup-header-highlight" : ""}`}></div>
+                            <input autoComplete="off" className="popup-title-input" type="text" 
+                            value={title} placeholder="Event Title" onChange={e => renderTitle(e)} tabIndex={0}></input>
                         </div>
                         <div className="popup-item" id="container-popup-dates">
                             <div className="container-popup-date">
@@ -65,9 +63,11 @@ class AddNoticeButton extends React.Component<Props, State> {
                             </div>
                         </div>
                         <div className="popup-item">
-                            <textarea placeholder="Event Notes" value={description} onChange={e => renderDescription(e)}></textarea>
+                            <textarea className="popup-details" placeholder="Event Notes" value={description} onChange={e => renderDescription(e)}></textarea>
                         </div>
-                        <button>Create Event</button>
+                        <div className="popup-item container-popup-createEvent">
+                            <button className="popup-createEvent">Create Event</button>                            
+                        </div>
                     </div>
                 </Popup>
             </div>
@@ -128,18 +128,6 @@ class AddNoticeButton extends React.Component<Props, State> {
         date.setDate(parseInt(arr[2]))
         date.setMonth(parseInt(arr[1]))
         date.setFullYear(parseInt(arr[0]))
-    }
-
-    inputBlur = (event: FocusEvent<HTMLInputElement>) => {
-        this.setState({
-            headerSelected: false
-        })
-    }
-
-    inputFocus = (event: FocusEvent<HTMLInputElement>) => {
-        this.setState({
-            headerSelected: true
-        })
     }
 
     addNotice = () => {
