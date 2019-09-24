@@ -195,9 +195,9 @@ class TimePicker extends React.Component<Props, State> {
     //Checks if newTime is valid in comparison to the begin date, if this is begin date it is valid
     private isEndTimeValid = (newTime: Time): boolean => {
         const { startDate, endDate} = this.props
-        let comparisonDate = new Date(startDate.getTime());
 
         if(endDate) {
+            let comparisonDate = new Date(endDate.getTime());
             if(newTime.hours === 24) newTime.hours = 0;
             comparisonDate.setHours(newTime.hours);
             comparisonDate.setMinutes(newTime.minutes);
