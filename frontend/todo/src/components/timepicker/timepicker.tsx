@@ -8,36 +8,45 @@ interface State {
     divId: string,
     showTimeSelector: boolean,
     userInputString: string,
-    isUserTypingTime: boolean,
-    availableTime: Time[]
+    isUserTypingTime: boolean
 }
 
 interface Props {
-    time?: Date,
+    startDate: Date,
+    endDate?: Date,
+    updateBeginDate: any,
+    updateEndDate: any
 }
 
 class TimePicker extends React.Component<Props, State> {
     private timeRef = React.createRef<HTMLDivElement>();
-    private popupTime = React.createRef<HTMLDivElement>()
+    private popupTime = React.createRef<HTMLDivElement>();
     constructor(props: any) {
         super(props);
 
-        const { time } = this.props;
+        const { startDate, endDate } = this.props;
         let defaultStartTime = new Date();
-        if(time) defaultStartTime = time;
 
-        let availableTime = this.getAvailableTime();
+        if(startDate) defaultStartTime = startDate;
+
+        let time: Time = {
+            minutes: defaultStartTime.getMinutes(),
+            hours: defaultStartTime.getHours()
+        }
+
+        if(endDate) {
+            time = {
+                minutes: endDate.getMinutes(),
+                hours: endDate.getHours()
+            }
+        };
 
         this.state = {
-            time: {
-                minutes: defaultStartTime.getMinutes(),
-                hours: defaultStartTime.getHours()
-            },
+            time,
             divId: getUniqueId('popuptime-'),
             showTimeSelector: false,
             userInputString: '',
-            isUserTypingTime: false,
-            availableTime
+            isUserTypingTime: false
         }
     }
 
@@ -46,12 +55,12 @@ class TimePicker extends React.Component<Props, State> {
         const { time, showTimeSelector, userInputString, isUserTypingTime } = this.state;
 
         let beginTimeString: string = formatTimeString(time);
-        if(userInputString || isUserTypingTime) beginTimeString = userInputString;
+        if(userInputString || isUserTypingTime) beginTimeString = userInputString;        
 
         return(
             <div className="container-popup-time">
                 <div ref={this.timeRef} onClick={e => togglePopup(true)}>
-                    <input className="popup-time" onBlur={e => validUserTypedTime(true)} 
+                    <input className="popup-time" onBlur={e => validUserTypedTime()} onFocus={e => e.target.select()}
                     onChange={e => updateUserInputString(e)} value={beginTimeString} type="text"></input>
                     <div hidden={!showTimeSelector} className="container-popup">
                         <div className="popup">
@@ -63,6 +72,22 @@ class TimePicker extends React.Component<Props, State> {
                 </div>
             </div>
         );
+    }
+
+    componentDidUpdate = () => {
+        const { endDate, startDate, updateEndDate } = this.props;
+        if(endDate && startDate > endDate) {
+            let endTime = new Date(startDate.getTime());
+            endTime.setMinutes(endTime.getMinutes() + 30);
+            let time: Time = {
+                minutes: endTime.getMinutes(),
+                hours: endTime.getHours()
+            }
+            updateEndDate(endTime);
+            this.setState({
+                time
+            })
+        };
     }
 
     componentDidMount() {
@@ -97,6 +122,8 @@ class TimePicker extends React.Component<Props, State> {
         this.setState({
             time
         })
+        if(this.props.endDate) this.props.updateEndDate(this.timeToDate(time));
+        else this.props.updateBeginDate(this.timeToDate(time));
     }
 
     updateUserInputString = (event: any) => {
@@ -107,7 +134,8 @@ class TimePicker extends React.Component<Props, State> {
         })
     }
 
-    validUserTypedTime = (shouldUpdateTime: boolean): boolean => {
+    //Checks the user input string to see if it is a valid typed time, if so update time to typed value
+    validUserTypedTime = () => {
         const { userInputString } = this.state;
         if(userInputString.includes(':')) {
             let userInputArr = userInputString.split(":");
@@ -119,30 +147,21 @@ class TimePicker extends React.Component<Props, State> {
                 let hoursIsNum = /^\d+$/.test(hoursString);
                 let minutesIsNum = /^\d+$/.test(minutes);
                 if(hoursIsNum && minutesIsNum) {
-                    if(shouldUpdateTime) {
-                        let hours: number = parseInt(hoursString);
-                        if(ampm === "PM" && hours < 13) hours += 12
-                        let newTime: Time = {
-                            hours,
-                            minutes: parseInt(minutes)
-                        }
-                        this.setState({
-                            time: newTime,
-                            isUserTypingTime: false
-                        })
+                    let hours: number = parseInt(hoursString);
+                    if(ampm === "PM" && hours < 13) hours += 12
+                    let newTime: Time = {
+                        hours,
+                        minutes: parseInt(minutes)
                     }
-                    
-                    return true;
+                    if(this.isEndTimeValid(newTime)) this.setTime(newTime);
                 }
+                    
             }
         }
-        if(shouldUpdateTime) {
-            this.setState({
-                userInputString: '',
-                isUserTypingTime: false
-            })
-        }        
-        return false;
+        this.setState({
+            userInputString: '',
+            isUserTypingTime: false
+        })
     }
 
     handleClickOutside = (event: any) => {
@@ -152,39 +171,59 @@ class TimePicker extends React.Component<Props, State> {
     }
 
     getAvailableTime = (): Time[] => {
+        const  { isEndTimeValid } = this;
         let availableTime: Time[] = [];
         let newTime: Time;
+
         for(let i = 0; i < 24; i++) {
             newTime = {
                 minutes: 0,
                 hours: i === 0? 24 : i
             }
-            availableTime.push(newTime)
+            if(isEndTimeValid(newTime)) availableTime.push(newTime);
+
             newTime = {
                 minutes: 30,
                 hours: i === 0? 24 : i
             }
-            availableTime.push(newTime)
+            if(isEndTimeValid(newTime)) availableTime.push(newTime);
+            
         }
-
         return availableTime
     }
 
+    //Checks if newTime is valid in comparison to the begin date, if this is begin date it is valid
+    private isEndTimeValid = (newTime: Time): boolean => {
+        const { startDate, endDate} = this.props
+        let comparisonDate = new Date(startDate.getTime());
+
+        if(endDate) {
+            if(newTime.hours === 24) newTime.hours = 0;
+            comparisonDate.setHours(newTime.hours);
+            comparisonDate.setMinutes(newTime.minutes);
+            if(comparisonDate > startDate) return true;
+        } else return true;
+
+        return false;
+    }
+
     renderTime = () => {
+        let availableTime = this.getAvailableTime();
         return (
             <div>
-                {this.state.availableTime.map(time => {
+                {availableTime.map(time => {
                     if(this.state.time.hours === time.hours) {
                         return (
                             <div ref={this.popupTime} className="time-selection-item"
-                            onClick={e => this.selectTimeEvent(time)}>
+                            onClick={e => {this.selectTimeEvent(time)}}>
                                 {formatTimeString(time)}
                             </div>
                         ) 
                     }
                     else return (
-                        <div className="time-selection-item" key={getUniqueId(formatTimeString(time))} onClick={e => this.selectTimeEvent(time)}>
-                        {formatTimeString(time)}
+                        <div className="time-selection-item" key={getUniqueId(formatTimeString(time))} 
+                        onClick={e => this.selectTimeEvent(time)}>
+                            {formatTimeString(time)}
                         </div>
                     )
                 })}
@@ -195,6 +234,16 @@ class TimePicker extends React.Component<Props, State> {
     selectTimeEvent = (time: Time) => {
         this.togglePopup(false);
         this.setTime(time)
+    }
+
+    private timeToDate = (newTime: Time): Date => {
+        const { startDate, endDate } = this.props;
+        let convertedDate = startDate;
+        if(endDate) convertedDate = endDate;
+
+        convertedDate.setHours(newTime.hours);
+        convertedDate.setMinutes(newTime.minutes);
+        return convertedDate;
     }
 }
 

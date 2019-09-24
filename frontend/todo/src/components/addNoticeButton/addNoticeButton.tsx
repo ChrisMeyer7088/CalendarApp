@@ -3,7 +3,6 @@ import './addNoticeButton.css';
 import { postNotice } from '../../services/infoRequests';
 import { Notice } from '../../interfaces/requests';
 import Popup from 'reactjs-popup';
-import {FocusEvent} from 'react'
 import TimePicker from '../timepicker/timepicker';
 
 interface Props {
@@ -23,6 +22,7 @@ class AddNoticeButton extends React.Component<Props, State> {
         let beginDate = this.props.selectedDate;
         let endDate = new Date(this.props.selectedDate.getTime());
         endDate.setMinutes(endDate.getMinutes() + 30);
+
         this.state = {
             notice: {
                 title: "",
@@ -36,8 +36,8 @@ class AddNoticeButton extends React.Component<Props, State> {
     }
 
     render() {
-        const { renderTitle, dateToStringFormat, renderStartDate, renderEndDate, renderDescription } = this;
-        const { headerSelected} = this.state;
+        const { renderTitle, dateToStringFormat, renderStartDate, renderEndDate, renderDescription, 
+            updateBeginDate, updateEndDate } = this;
         const { title, beginDate, endDate, description } = this.state.notice;
         let beginDateFormatted = dateToStringFormat(beginDate)
         let endDateFormatted = dateToStringFormat(endDate)
@@ -53,13 +53,15 @@ class AddNoticeButton extends React.Component<Props, State> {
                         <div className="popup-item" id="container-popup-dates">
                             <div className="container-popup-date">
                                 <input className="popup-date" required={true} onChange={e => renderStartDate(e)} value={beginDateFormatted} type="date"></input>
-                                <TimePicker />
+                                <TimePicker startDate={beginDate} updateEndDate={updateEndDate} 
+                                updateBeginDate={updateBeginDate} />
                             </div>
                             <span className="popup-date-hyphen">-</span>
                             <div className="container-popup-date">
                                 <input className="popup-date" required={true} onChange={e => renderEndDate(e)} 
                                 min={beginDateFormatted} value={endDateFormatted} type="date"></input>
-                                <TimePicker />
+                                <TimePicker updateBeginDate={updateBeginDate} updateEndDate={updateEndDate} 
+                                startDate={beginDate} endDate={endDate}/>
                             </div>
                         </div>
                         <div className="popup-item">
@@ -138,6 +140,22 @@ class AddNoticeButton extends React.Component<Props, State> {
             .catch(err => {
                 console.error(err)
             })
+    }
+
+    updateBeginDate = (newBeginDate: Date) => {
+        let currentNotice = this.state.notice;
+        currentNotice.beginDate = newBeginDate;
+        this.setState({
+            notice: currentNotice
+        })
+    }
+
+    updateEndDate = (newEndDate: Date) => {
+        let currentNotice = this.state.notice;
+        currentNotice.endDate = newEndDate;
+        this.setState({
+            notice: currentNotice
+        })
     }
 
 }
