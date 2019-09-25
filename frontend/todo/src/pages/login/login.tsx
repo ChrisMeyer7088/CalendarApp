@@ -33,20 +33,28 @@ class LoginPage extends React.Component<null, State> {
         }
         return (
             <div className="container-main">
-                <h1 className="h1-title">Calendar Login</h1>
-                <div hidden={!attemptedLogin}>
-                    <p className="warningText">Invalid Username or Password</p>
+                <div className="login-form">
+                    <div className="container-login-data">
+                        <h1 className="login-header">Sign In:</h1>
+                        <div hidden={!attemptedLogin}>
+                            <p className="warningText">Invalid Username or Password</p>
+                        </div>
+                        <div>
+                            <div className="container-input">
+                                <input value={username} onChange={e => updateUsername(e)} placeholder="Username" type="text"
+                                className="input-field"></input>
+                            </div>
+                            <div className="container-input">
+                                <input placeholder="Password" value={password} onChange={e => updatePassword(e)} type="password"
+                                onKeyPress={e => checkEnterKey(e)} className="input-field"></input>
+                            </div>
+                        </div>
+                        <button className="button-submit" onClick={() => loginAttempt()}>Login</button>
+                        <p>Don't have an account? Register <Link to="/register">here!</Link></p>
+                    </div>
                 </div>
-                <div>
-                    <h3>UserName</h3>
-                    <input value={username} onChange={e => updateUsername(e)} placeholder="username" type="text"></input>
-                    <h3>Password</h3>
-                    <input placeholder="password" value={password} onChange={e => updatePassword(e)} type="password"
-                    onKeyPress={e => checkEnterKey(e)}></input>
-                </div>
-                <button className="button-submit" onClick={() => loginAttempt()}>Login</button>
-                <p>Don't have an account? Register <Link to="/register">here!</Link></p>
             </div>
+            
         )
     }
 
