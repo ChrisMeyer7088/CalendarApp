@@ -134,3 +134,8 @@ input[type=date]::-webkit-calendar-picker-indicator {
 .popup-createEvent:focus {
     outline: none;
 }
+
+.button-addNotice {
+    border-radius: 8px;
+    padding: 3px 8px;
+}

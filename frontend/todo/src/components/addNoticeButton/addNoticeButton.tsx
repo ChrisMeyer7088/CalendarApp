@@ -44,7 +44,7 @@ class AddNoticeButton extends React.Component<Props, State> {
 
         return(
             <div>
-                <Popup trigger={<button>Create Event</button>} modal position="top center">
+                <Popup trigger={<button className="button-addNotice">Create Event</button>} modal position="top center">
                     <div className="popup-content">
                         <div className="popup-item popup-header">
                             <input autoComplete="off" className="popup-title-input" type="text" 
