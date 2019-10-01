@@ -11,22 +11,7 @@
     table-layout: fixed;
     background-color: white;
     box-shadow: 10px 10px 5px rgba(0, 0, 0, 0.5);
-}
-
-.container-calendar-year, .container-calendar-month {
-    width: 100%;
-    text-align: center;
-    padding: 16px 0px;
-}
-
-.container-calendar-month {
-    font-size: 35px;
-    padding-bottom: 32px;
-    border-bottom: 3px solid black;
-}
-
-.container-calendar-year {
-    font-size: 35px;
+    border: 3px solid black;
 }
 
 .calendar-row-dates {
@@ -34,20 +19,25 @@
     height: 50px;
 }
 
-.calendar-row-dates:nth-child(1) {
-    border-left: 3px solid black;
-    border-right: 3px solid black;
-}
-
 .calendar-day {
     height: 100px;
-    border: 3px solid black;
+    border: 1px dotted black;
+    padding: 6px;
     text-align: left;
     vertical-align: 0;
+}
+
+.calendar-day:hover {
+    box-shadow: 0px 0px 0px 3px rgb(50, 54, 245, .3);
 }
 
 .container-day-number {
     padding: 4px;
     font-weight: bold;
     font-size: 19px;
+}
+
+#selected-day {
+    transition: box-shadow 0.2s ease-in-out;
+    box-shadow: 0px 0px 0px 3px rgb(50, 54, 245);
 }

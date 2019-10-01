@@ -1,8 +1,8 @@
 import React from 'react';
 import { Redirect } from 'react-router-dom';
 import { getUserNotices } from '../../services/infoRequests';
-import AddNoticeButton from '../../components/addNoticeButton/addNoticeButton';
 import './home.css';
+import Header from '../../components/header/header';
 
 interface State {
     userId: string,
@@ -13,10 +13,8 @@ interface State {
 }
 
 class HomePage extends React.Component<null, State> {
-    private DATES: string[] = ["Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"];
-    private MONTHS: string[] = ["January", "Febuary", "March", "April", "May", "June", "July", "August", "September",
-    "October", "November", "December"]
-
+    private DATES: string[] = ["SUN", "MON", "TUE", "WED", "THU", "FRI", "SAT"];
+    
     constructor(props: any) {
         super(props);
         this.state = {
@@ -30,8 +28,7 @@ class HomePage extends React.Component<null, State> {
     }
 
     render() {
-        const { returnToLogin,renderCalendarDayHeaders, renderCalendarYear, renderCalendarMonth, 
-            renderCalendarDays } = this;
+        const { returnToLogin, renderCalendarDayHeaders, renderCalendarDays, incrementMonth, decrementMonth } = this;
         const { redirectToLogin, token, selectedDate } = this.state
 
         if(redirectToLogin) {
@@ -39,9 +36,8 @@ class HomePage extends React.Component<null, State> {
         }
         return (
             <div id="container-calendar">
-                <AddNoticeButton token={token} returnToLogin={returnToLogin} selectedDate={selectedDate}/>
-                    {renderCalendarYear()}
-                    {renderCalendarMonth()}
+                <Header selectedDate={selectedDate} token={token} returnToLogin={returnToLogin} 
+                incrementMonth={incrementMonth} decrementMonth={decrementMonth} />
                 <table id="calendar">
                     <tbody>
                         {renderCalendarDayHeaders()}
@@ -52,13 +48,16 @@ class HomePage extends React.Component<null, State> {
         )
     }
 
+
+    //Renders CalendarDays using information from the selected days
     renderCalendarDays = () => {
-        const { getFullCalendarDays, localDateToDisplayString } = this;
+        const { getFullCalendarDays, localDateToDisplayString, changeSelectedDate } = this;
         const { selectedDate } = this.state;
 
         let allDays: Date[] = getFullCalendarDays(selectedDate.getMonth(), selectedDate.getFullYear());
-        let daysInWeekIncremenets: Date[][] = [[]];
 
+        //Splits the days into weekly increments to display in table rows
+        let daysInWeekIncremenets: Date[][] = [[]];
         let rowIndex = 0;
         for(let index = 0; index < allDays.length; index++) {
             if(index % 7 === 0 && index !== 0) {
@@ -73,37 +72,29 @@ class HomePage extends React.Component<null, State> {
                 return (
                     <tr>
                         {weekArr.map(day => {
-                            return (
-                                <td className="calendar-day">
-                                    <div>
-                                        <div className="container-day-number">{localDateToDisplayString(day)}</div>
-                                    </div>
-                                </td>
-                            )
+                            //Sets an id on the selected date
+                            if(day.getMonth() === selectedDate.getMonth() && day.getDate() === selectedDate.getDate()) {
+                                return (
+                                    <td onClick={() => changeSelectedDate(day)} className="calendar-day" id="selected-day" >
+                                        <div>
+                                            <div className="container-day-number">{localDateToDisplayString(day)}</div>
+                                        </div>
+                                    </td>
+                                )
+                            } else {
+                                return (
+                                    <td onClick={() => changeSelectedDate(day)} className="calendar-day">
+                                        <div>
+                                            <div className="container-day-number">{localDateToDisplayString(day)}</div>
+                                        </div>
+                                    </td>
+                                )
+                            }
                         })}
                     </tr>
                 )
             })
                    
-        )
-    }
-
-    renderCalendarYear = () => {
-        const { selectedDate } = this.state;
-        return (
-            <div className="container-calendar-year">
-                {selectedDate.getFullYear()}
-            </div>
-        )
-    }
-
-    renderCalendarMonth = () => {
-        const { selectedDate } = this.state;
-
-        return (
-            <div className="container-calendar-month">
-                {this.MONTHS[selectedDate.getMonth()]}
-            </div>
         )
     }
 
@@ -148,12 +139,34 @@ class HomePage extends React.Component<null, State> {
         })
     }
 
+    changeSelectedDate = (newDate: Date) => {
+        this.setState({
+            selectedDate: newDate
+        })
+    }
+
+    incrementMonth = () => {
+        let selectedDate = this.state.selectedDate;
+        selectedDate.setMonth(selectedDate.getMonth() + 1)
+        this.setState({
+            selectedDate
+        })
+    }
+
+    decrementMonth = () => {
+        let selectedDate = this.state.selectedDate;
+        selectedDate.setMonth(selectedDate.getMonth() - 1)
+        this.setState({
+            selectedDate
+        })
+    }
+
     private getDaysFromMonth = (month: number, year: number) => {
-        let currentDate = new Date(year, month, 1);
+        let currentMonth = new Date(year, month, 1);
         let days: Date[] = [];
-        while(currentDate.getMonth() === month ) {
-            days.push(new Date(currentDate))
-            currentDate.setDate(currentDate.getDate() + 1);
+        while(currentMonth.getMonth() === month ) {
+            days.push(new Date(currentMonth))
+            currentMonth.setDate(currentMonth.getDate() + 1);
         }
 
         return days;
@@ -163,16 +176,16 @@ class HomePage extends React.Component<null, State> {
         let days: Date[] = this.getDaysFromMonth(month, year);
 
         let counter = 0;
+        //While the first day is not Sunday
         while(days[0].getDay() !== 0) {
             days.unshift(new Date(year, month, -1 * (counter)))
             counter++;
         }
 
+        //While the last day is not a Saturday
         while(days[days.length - 1].getDay() !== 6) {
-            days.push(new Date(year, month, days.length + 1))
-            counter++;
+            days.push(new Date(days[days.length - 1].getFullYear(), days[days.length - 1].getMonth(), days[days.length - 1].getDate() + 1))
         }
-
         return days;
     }
 
@@ -181,6 +194,7 @@ class HomePage extends React.Component<null, State> {
         let dayAsString: string = day.toString();
         return `${dayAsString}`
     }
+
 }
 
 export default HomePage;
