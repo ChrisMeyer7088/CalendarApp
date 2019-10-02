@@ -1,13 +1,39 @@
-.button-submit {
-    margin-top: 8px;
+.registration-form {
+  height: 40%;
 }
 
-.ul-passwordReqs {
-    font-size: 11px;
-    text-align: left;
+.invalid-field {
+  border: red 2px solid;
 }
 
-#RegistrationForm{
-    margin: auto;
-    width: 27%;
+.valid-field {
+  border: green 2px solid;
+}
+
+.error-message {
+  margin: auto;
+  font-size: 12px;
+  margin-top: 6px;
+  min-height: 30px;
+  width: 150px;
+  background-color: white;
+  border-radius: 16px;
+}
+
+.error-message {
+  color: rgba(235, 43, 43, 0.746);
+}
+
+.ok-message {
+  position: absolute;
+  right: 25%;
+  color: rgba(23, 165, 23, 0.746);
+  font-size: 22px;
+}
+
+.message-text{
+  margin: auto;
+  text-align: center;
+  display: inline;
+  padding-left: 6px;
 }

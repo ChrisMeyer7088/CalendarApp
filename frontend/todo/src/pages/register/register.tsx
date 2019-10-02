@@ -41,39 +41,93 @@ constructor(props: any) {
 }
 
     render() {
-        const { updateConfirmPassword, updateUsername, updatePassword, registerUser, renderPasswordReq, renderUsernameCheck,
+        const { updateConfirmPassword, updateUsername, updatePassword, registerUser, getPasswordReq, usernameCheck,
             checkEnterKey } = this;
-        const { username, cpassword, password, canRegister, redirectToLogin } = this.state;
+        const { username, cpassword, password, canRegister, redirectToLogin, usernameFiedlHasBeenSelected, 
+            passwordFieldHasBeenSelected } = this.state;
+        
+
+        let usernameInputFieldClass = '';
+        let usernameMessageClass = '';
+        let usernameMessage: string = '';
+        let usernameCheckObj;
+        if(!usernameFiedlHasBeenSelected) usernameInputFieldClass = "input-field"
+        else {
+            usernameCheckObj = usernameCheck();
+            usernameMessage = usernameCheckObj.message;
+            if(usernameCheckObj.validity) {
+                usernameMessage = "&#x2713"
+                usernameInputFieldClass = "input-field valid-field"
+                usernameMessageClass = "ok-message"
+            }
+            else {
+                usernameInputFieldClass = "input-field invalid-field"
+                usernameMessageClass = "error-message"
+            }
+        }
+
+        let passwordInputFieldClass = '';
+        let passwordMessageClass = '';
+        let passwordMessage: string = '';
+        let passwordCheckObj
+        if(!passwordFieldHasBeenSelected) passwordInputFieldClass = "input-field"
+        else {
+            passwordCheckObj = getPasswordReq();
+            passwordMessage = passwordCheckObj.message;
+            if(passwordCheckObj.validity) {
+                passwordMessage = "&#x2713"
+                passwordInputFieldClass = "input-field valid-field"
+                passwordMessageClass = "ok-message"
+            }
+            else {
+                passwordInputFieldClass = "input-field invalid-field"
+                passwordMessageClass = "error-message"
+            }
+        }
 
         if(redirectToLogin) return (<Redirect to="/login"/>)
 
          return (
-            <div>
-                <h1 className="h1-title">Register</h1>
-                <div id="RegistrationForm">
-                    <h3>Username</h3>
-                    <input placeholder="username" value={username} onChange={e => updateUsername(e)} type="text"></input>
-                    {renderUsernameCheck()}
-                    <h3>Password</h3>
-                    <input placeholder="password" value={password} onChange={e => updatePassword(e)} type="password"></input>
-                    {renderPasswordReq()}
-                    <h3>Confirm Password</h3>
-                    <input placeholder="confirm password" value={cpassword} onChange={e => updateConfirmPassword(e)} 
-                    type="password" onKeyPress={e => checkEnterKey(e)}></input>
+            <div className="container-main">
+                <div className="registration-form">
+                    <div className="container-login-data">
+                        <h1 className="login-header">Create Account:</h1>
+                        <div>
+                            <div className="container-input">
+                                <input placeholder="Username" value={username} onChange={e => updateUsername(e)} type="text"
+                                className={usernameInputFieldClass}></input>
+                                <div hidden={usernameCheckObj?false: true} className={usernameMessageClass}>
+                                    <p className="message-text" dangerouslySetInnerHTML={{ __html: usernameMessage}}></p>
+                                </div>
+                            </div>
+                            <div className="container-input">
+                                <input placeholder="Password" value={password} onChange={e => updatePassword(e)} type="password"
+                                className={passwordInputFieldClass}></input>
+                                <div hidden={passwordCheckObj?false: true} className={passwordMessageClass}>
+                                    <p className="message-text" dangerouslySetInnerHTML={{ __html: passwordMessage}}></p>
+                                </div>
+                            </div>
+                            <div className="container-input">
+                                <input placeholder="Confirm Password" value={cpassword} onChange={e => updateConfirmPassword(e)} 
+                                type="password" onKeyPress={e => checkEnterKey(e)} className="input-field"></input>
+                            </div>
+                        </div>
+                        <button disabled={!canRegister} onClick={() => registerUser()} className="button-submit" >Register</button>
+                        <p>Already have an account? <Link to="/login">Login!</Link></p>
+                    </div>
                 </div>
-                <button disabled={!canRegister} onClick={() => registerUser()} className="button-submit" >Create</button>
-                <p>Already have an account? <Link to="/login">Login!</Link></p>
             </div>
         )
     }
 
     //Renders password requirement tag
-    renderPasswordReq = () => {
-        const {passwordIsMinLength, passwordsMatch, passwordsHaveCorrectCharacters, passwordFieldHasBeenSelected} = this.state
-        if(!passwordFieldHasBeenSelected) return
-        if(!passwordIsMinLength) return (<p>Password must be a minimum of 8 characters</p>)
-        if(!passwordsHaveCorrectCharacters) return (<p>Password must contain at least 1 number and 1 uppercase character</p>)
-        if(!passwordsMatch) return (<p>Passwords must match</p>)
+    getPasswordReq = (): {validity: boolean, message: string} => {
+        const {passwordIsMinLength, passwordsMatch, passwordsHaveCorrectCharacters} = this.state
+        if(!passwordIsMinLength) return {validity: false, message: "Password must be a minimum of 8 characters"}
+        if(!passwordsHaveCorrectCharacters) return {validity: false, 
+            message: "Password must contain at least 1 number and 1 uppercase character"}
+        if(!passwordsMatch) return {validity: false, message: "Passwords must match"}
+        return {validity: true, message: "Valid Password"}
     }
 
     updateUsername = (event: any) => {
@@ -111,13 +165,11 @@ constructor(props: any) {
         })
     }
 
-    //Renders the username availability tag
-    renderUsernameCheck = () => {
-        const {usernameExists, usernameFiedlHasBeenSelected, usernameIsBlank} = this.state;
-        if(!usernameFiedlHasBeenSelected) return
-        if(usernameExists) return (<p>Username Already Taken</p>)
-        if(usernameIsBlank) return (<p>Username cannot be blank</p>)
-        return (<p>Username Available</p>)
+    usernameCheck = (): {validity:boolean, message: string} => {
+        const {usernameExists, usernameIsBlank} = this.state;
+        if(usernameExists) return {validity: false, message: "Username Already Exists"};
+        if(usernameIsBlank) return {validity: false, message: "Username Cannot be Blank"};
+        return {validity: true, message: "Username Is Allowed"};
     }
 
     //Updates password and corresponding state

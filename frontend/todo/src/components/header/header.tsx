@@ -14,10 +14,6 @@ class Header extends React.Component<Props> {
     private MONTHS: string[] = ["January", "Febuary", "March", "April", "May", "June", "July", "August", "September",
     "October", "November", "December"];
 
-    constructor(props: any) {
-        super(props);
-    }
-
     render() {
         const { token, returnToLogin, selectedDate} = this.props;
         const { renderCalendarMonth, renderCalendarYear} = this;
