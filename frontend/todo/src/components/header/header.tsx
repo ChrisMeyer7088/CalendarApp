@@ -1,6 +1,7 @@
 import React from 'react';
 import './header.css';
 import AddNoticeButton from '../../components/addNoticeButton/addNoticeButton';
+import HamburgerMenu from '../../components/hamburgerMenu/hamburgerMenu'
 
 interface Props {
     selectedDate: Date,
@@ -19,6 +20,7 @@ class Header extends React.Component<Props> {
         return (
             <div className="container-header">
                 <div className="header">
+                    <HamburgerMenu />
                     <AddNoticeButton token={token} returnToLogin={returnToLogin} selectedDate={selectedDate}/>
                     {renderCalendarMonth()}
                     {renderCalendarYear()}

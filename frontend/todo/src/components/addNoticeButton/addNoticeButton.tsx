@@ -68,7 +68,7 @@ class AddNoticeButton extends React.Component<Props, State> {
                             <textarea className="popup-details" placeholder="Event Notes" value={description} onChange={e => renderDescription(e)}></textarea>
                         </div>
                         <div className="popup-item container-popup-createEvent">
-                            <button className="popup-createEvent">Create Event</button>                            
+                            <button className="popup-createEvent">Create</button>                            
                         </div>
                     </div>
                 </Popup>
