@@ -28,22 +28,24 @@ class HomePage extends React.Component<null, State> {
     }
 
     render() {
-        const { returnToLogin, renderCalendarDayHeaders, renderCalendarDays, incrementMonth, decrementMonth } = this;
+        const { returnToLogin, renderCalendarDayHeaders, renderCalendarDays, setMonth } = this;
         const { redirectToLogin, token, selectedDate } = this.state
 
         if(redirectToLogin) {
             return (<Redirect to="/login"/>)
         }
         return (
-            <div id="container-calendar">
+            <div id="container-content">
                 <Header selectedDate={selectedDate} token={token} returnToLogin={returnToLogin} 
-                incrementMonth={incrementMonth} decrementMonth={decrementMonth} />
-                <table id="calendar">
-                    <tbody>
-                        {renderCalendarDayHeaders()}
-                        {renderCalendarDays()}
-                    </tbody>
-                </table>
+                setMonth={setMonth} />
+                <div className="container-calender">
+                    <table id="calendar">
+                        <tbody>
+                            {renderCalendarDayHeaders()}
+                            {renderCalendarDays()}
+                        </tbody>
+                    </table>
+                </div>
             </div>
         )
     }
@@ -145,17 +147,9 @@ class HomePage extends React.Component<null, State> {
         })
     }
 
-    incrementMonth = () => {
-        let selectedDate = this.state.selectedDate;
-        selectedDate.setMonth(selectedDate.getMonth() + 1)
-        this.setState({
-            selectedDate
-        })
-    }
-
-    decrementMonth = () => {
-        let selectedDate = this.state.selectedDate;
-        selectedDate.setMonth(selectedDate.getMonth() - 1)
+    setMonth = (newMonth: number) => {
+        let selectedDate: Date = this.state.selectedDate;
+        selectedDate.setMonth(newMonth);
         this.setState({
             selectedDate
         })

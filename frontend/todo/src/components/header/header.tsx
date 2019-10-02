@@ -6,8 +6,7 @@ interface Props {
     selectedDate: Date,
     token: string,
     returnToLogin: any,
-    incrementMonth: any,
-    decrementMonth: any
+    setMonth: any
 }
 
 class Header extends React.Component<Props> {
@@ -18,10 +17,12 @@ class Header extends React.Component<Props> {
         const { token, returnToLogin, selectedDate} = this.props;
         const { renderCalendarMonth, renderCalendarYear} = this;
         return (
-            <div>
-                <AddNoticeButton token={token} returnToLogin={returnToLogin} selectedDate={selectedDate}/>
-                {renderCalendarYear()}
-                {renderCalendarMonth()}
+            <div className="container-header">
+                <div className="header">
+                    <AddNoticeButton token={token} returnToLogin={returnToLogin} selectedDate={selectedDate}/>
+                    {renderCalendarMonth()}
+                    {renderCalendarYear()}
+                </div>
             </div>
         )
     }
@@ -36,16 +37,40 @@ class Header extends React.Component<Props> {
     }
 
     renderCalendarMonth = () => {
-        const {decrementMonth, incrementMonth} = this.props;
-        const { selectedDate } = this.props;
+        const { getMonthInput } = this;
+        const { setMonth, selectedDate } = this.props;
 
         return (
             <div className="container-calendar-month">
-                <div className="selector-left" onClick={() => decrementMonth()}>{"<"}</div>
-                {this.MONTHS[selectedDate.getMonth()]}
-                <div className="selector-right" onClick={() => incrementMonth()}>{">"}</div>
+                <div className="selector-left" onClick={() => setMonth(selectedDate.getMonth() - 1)}>{"<"}</div>
+                <div className="month-header header-grey" onClick={() => setMonth(selectedDate.getMonth() - 2)}>
+                    {this.MONTHS[getMonthInput(-2)].substr(0,3)}
+                </div>
+                <div className="month-header header-grey" onClick={() => setMonth(selectedDate.getMonth() - 1)}>
+                    {this.MONTHS[getMonthInput(-1)]}
+                </div>
+                <div className="month-header">
+                    {this.MONTHS[selectedDate.getMonth()]}
+                </div>
+                <div className="month-header  header-grey" onClick={() => setMonth(selectedDate.getMonth() + 1)}>
+                    {this.MONTHS[getMonthInput(1)]}
+                </div>
+                <div className="month-header header-grey" onClick={() => setMonth(selectedDate.getMonth() + 2)}>
+                    {this.MONTHS[getMonthInput(2)].substr(0,3)}
+                </div>
+                <div className="selector-right" onClick={() => setMonth(selectedDate.getMonth() + 1)}>{">"}</div>
             </div>
         )
+    }
+
+    private getMonthInput = (monthNumber: number): number => {
+        const { MONTHS } = this;
+        const { selectedDate } = this.props;
+
+        let newMonth = selectedDate.getMonth() + monthNumber;
+        if(newMonth < 0) newMonth = MONTHS.length + newMonth;
+        if(newMonth > MONTHS.length - 1) newMonth = newMonth - MONTHS.length;
+        return newMonth;
     }
 
 }

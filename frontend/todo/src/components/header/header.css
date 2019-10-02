@@ -1,35 +1,57 @@
-.container-calendar-year, .container-calendar-month {
-    width: 100%;
-    text-align: center;
+.container-header {
+    flex: 0 1 auto;
+    position: relative;
+    display: flex;
+    min-width: 50%;
+    justify-content: center;
     padding: 16px 0px;
+    background-color: white;
+}
+
+.header {
+    display: flex;
+    justify-content: space-between;
+    width: 75%;
+    min-width: 50%;
+    align-items: center;
+}
+
+.month-header {
+    display: inline-block;
+    font-size: 25px;
+}
+
+.header-grey{
+    opacity: .5;
+    transition: box-shadow 0.3s ease-in-out;
+}
+
+.header-grey:hover {
+    cursor: pointer;
+    box-shadow: 0px 0px 5px rgba(0, 0, 0, 0.5);
+}
+
+.container-calendar-year, .container-calendar-month {
+    display: flex;
 }
 
 .container-calendar-month {
-    font-size: 35px;
-    padding-bottom: 32px;
+    align-items: center;
+    justify-content: space-between;
+    width: 75%;
 }
 
 .container-calendar-year {
-    font-size: 35px;
+    font-size: 30px;
 }
 
 .selector-left, .selector-right {
-    display: inline-block;
-    width: 35px;
+    font-size: 45px;
+    width: 50px;
     transition: box-shadow 0.3s ease-in-out;
 }
 
 .selector-left:hover, .selector-right:hover {
     cursor: pointer;
     box-shadow: 0px 0px 5px rgba(0, 0, 0, 0.5);
-}
-
-.selector-left {
-    float: left;
-    margin-left: 20%;
-}
-
-.selector-right {
-    float: right;
-    margin-right: 20%;
 }

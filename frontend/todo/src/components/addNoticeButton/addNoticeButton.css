@@ -136,6 +136,18 @@ input[type=date]::-webkit-calendar-picker-indicator {
 }
 
 .button-addNotice {
-    border-radius: 8px;
+    background-color: rgb(245, 245, 245);
+    font-size: 18px;
+    width: 80px;
+    border-radius: 24px;
     padding: 3px 8px;
+    transition: box-shadow 0.3s ease-in-out;
+}
+
+.button-addNotice:hover {
+    box-shadow: 4px 4px 5px rgba(0, 0, 0, 0.5);
+    cursor: pointer;
+}
+.button-addNotice:focus {
+    outline: none;
 }
