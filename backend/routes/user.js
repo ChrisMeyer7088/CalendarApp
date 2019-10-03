@@ -1,7 +1,7 @@
 const express = require("express");
 const router = express.Router();
-const { createNewUser, getUserByUsername, checkUserCredentials } = require('../db/models/users')
-const { createToken, checkForActiveToken, getAssociatedUser } = require('../db/models/token');
+const { createNewUser, getUserByUsername, checkUserCredentials, getUserByEmail } = require('../db/models/users')
+const { createToken, checkForActiveToken } = require('../db/models/token');
 const { validatePassword, validateEmail } = require('../services/userServices')
 
 router.post('/register', (req, res, next) => {
@@ -64,6 +64,54 @@ router.post('/register', (req, res, next) => {
                 success: false
             })
         })
+    }
+})
+
+router.post('/email', (req, res, next) => {
+    if(!req.body.email) {
+        res.status(400).json({
+            type: "user.email",
+            data: {
+                message: "Invalid request sent",
+                userExists: null
+            },
+            success: false
+        })
+    } else {
+        getUserByEmail(req.body.email)
+        .then(result => {
+            if(result.rowCount === 0){
+                res.status(200).json({
+                    type: "user.email",
+                    data: {
+                        message: "Request successful",
+                        userExists: false
+                    },
+                    success: true
+                })
+            } else {
+                res.status(200).json({
+                    type: "user.email",
+                    data: {
+                        message: "Request successful",
+                        userExists: true
+                    },
+                    success: true
+                })
+            }
+        })
+        .catch(err => {
+            console.log(err)
+            res.status(500).json({
+                type: "user.username",
+                data: {
+                    message: "Something went wrong",
+                    userExists: null
+                },
+                success: false
+            })
+        })
+
     }
 })
 
@@ -196,7 +244,27 @@ router.post('/password-reset', (req, res, next) => {
         })
     } else {
         let email = req.body.email;
-        res.status(200).json({success: req.body.email})
+        getUserByEmail(email)
+            .then(result => {
+                let userId = result.rows[0].id;
+                res.status(200).json({
+                    type: "password.reset",
+                    data: {
+                        message: "Link Sent",
+                    },
+                    success: true
+                })
+            })
+            .catch(err => {
+                console.log(err)
+                res.status(500).json({
+                    type: "password.reset",
+                    data: {
+                        message: "Something went wrong",
+                    },
+                    success: false
+                })
+            })
     }
 })
 

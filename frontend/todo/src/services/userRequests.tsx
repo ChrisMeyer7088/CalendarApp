@@ -15,6 +15,10 @@ export const requestCheckUsername = (username: string) => {
     return axios.post(baseServerURL + 'user', {username});
 }
 
+export const requestCheckEmail = (email: string) => {
+    return axios.post(baseServerURL + 'email', {email});
+}
+
 export const requestResetPassword = (email: string) => {
     return axios.post(baseServerURL + 'password-reset', {email})
 }

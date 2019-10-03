@@ -2,7 +2,7 @@ import React from 'react';
 import { Link, Redirect } from 'react-router-dom';
 import './register.css';
 import { RegisterUser } from '../../interfaces/requests';
-import { requestRegisterUser, requestCheckUsername } from '../../services/userRequests';
+import { requestRegisterUser, requestCheckUsername, requestCheckEmail } from '../../services/userRequests';
 
 interface State {
     username: string,
@@ -103,6 +103,7 @@ constructor(props: any) {
             usernameExists: false,
             usernameFiedlHasBeenSelected: true
         })
+
         //If new username isn't empty check for available username
         if(event.target.value){
             requestCheckUsername(event.target.value)
@@ -120,6 +121,17 @@ constructor(props: any) {
             email: event.target.value,
             emailHasBeenSelected: true
         })
+
+        //If new email isn't empty check for available email
+        if(event.target.value){
+            requestCheckEmail(event.target.value)
+            .then(res => {
+                this.setState({
+                    emailExists: res.data.data.userExists
+                }) 
+            })
+            .catch(err => console.error(err))
+        }
     }
 
     //Updates password and corresponding state
