@@ -2,7 +2,14 @@
     height: 100%;
     width: 100%;
     display: flex;
+    flex-direction: row;
+}
+
+.flex-container {
+    display: flex;
     flex-direction: column;
+    height: 100%;
+    width: 100%;
 }
 
 .container-calender {
@@ -18,6 +25,7 @@
     background-color: white;
     box-shadow: 10px 10px 5px rgba(0, 0, 0, 0.5);
     border: 3px solid black;
+    border-left: none;
 }
 
 .calendar-row-dates {

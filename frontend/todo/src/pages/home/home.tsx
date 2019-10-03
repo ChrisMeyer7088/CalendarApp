@@ -3,13 +3,15 @@ import { Redirect } from 'react-router-dom';
 import { getUserNotices } from '../../services/infoRequests';
 import './home.css';
 import Header from '../../components/header/header';
+import HamburgerMenu from '../../components/hamburgerMenu/hamburgerMenu';
 
 interface State {
     userId: string,
     token: string,
     redirectToLogin: boolean,
     notices: Object[],
-    selectedDate: Date
+    selectedDate: Date,
+    showMenu: boolean
 }
 
 class HomePage extends React.Component<null, State> {
@@ -22,29 +24,33 @@ class HomePage extends React.Component<null, State> {
             token: sessionStorage.getItem("token") || "",
             redirectToLogin: false,
             notices: [],
-            selectedDate: new Date()
+            selectedDate: new Date(),
+            showMenu: true
         }
         this.retrieveNotices();
     }
 
     render() {
-        const { returnToLogin, renderCalendarDayHeaders, renderCalendarDays, setMonth } = this;
-        const { redirectToLogin, token, selectedDate } = this.state
+        const { returnToLogin, renderCalendarDayHeaders, renderCalendarDays, setMonth, toggleMenu } = this;
+        const { redirectToLogin, token, selectedDate, showMenu } = this.state
 
         if(redirectToLogin) {
             return (<Redirect to="/login"/>)
         }
         return (
             <div id="container-content">
-                <Header selectedDate={selectedDate} token={token} returnToLogin={returnToLogin} 
-                setMonth={setMonth} />
-                <div className="container-calender">
-                    <table id="calendar">
-                        <tbody>
-                            {renderCalendarDayHeaders()}
-                            {renderCalendarDays()}
-                        </tbody>
-                    </table>
+                <HamburgerMenu showMenu={showMenu}/>
+                <div className="flex-container">
+                    <Header toggleMenu={toggleMenu} selectedDate={selectedDate} token={token} returnToLogin={returnToLogin} 
+                    setMonth={setMonth} />
+                    <div className="container-calender">
+                        <table id="calendar">
+                            <tbody>
+                                {renderCalendarDayHeaders()}
+                                {renderCalendarDays()}
+                            </tbody>
+                        </table>
+                    </div>
                 </div>
             </div>
         )
@@ -152,6 +158,12 @@ class HomePage extends React.Component<null, State> {
         selectedDate.setMonth(newMonth);
         this.setState({
             selectedDate
+        })
+    }
+
+    toggleMenu = () => {
+        this.setState({
+            showMenu: !this.state.showMenu
         })
     }
 

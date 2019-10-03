@@ -2,39 +2,22 @@ import React from 'react';
 import './hamburgerMenu.css';
 
 interface Props {
-    
-}
-
-interface State {
     showMenu: boolean
 }
 
-class HamburgerMenu extends React.Component<Props, State> {
-    constructor(props: any) {
-        super(props);
-
-        this.state = {
-            showMenu: false
-        }
-    }
+class HamburgerMenu extends React.Component<Props> {
 
     render() {
-        const { toggleMenu } = this;
-        const { showMenu } = this.state;
-        
+        const { showMenu } = this.props;
+
+        let containerClass = "hamburger-container hide"
+        if(showMenu) containerClass = "hamburger-container"
+
         return (
-            <div>
-                <div className="hamburgermenu-button-main" onClick={() => toggleMenu()} dangerouslySetInnerHTML={{__html: "&#x2630"}}></div>
+            <div className={containerClass}>
+                <img className="profile-picture" src={require('../../images/emptyProfilePic.png')} />
             </div>
         )
-    }
-
-
-    toggleMenu = () => {
-        console.log("current div state: " )
-        this.setState({
-            showMenu: !this.state.showMenu
-        })
     }
 }
 
