@@ -2,6 +2,8 @@ import React from 'react';
 import './retrieveAccount.css';
 import { Link, Redirect } from 'react-router-dom';
 
+import {requestResetPassword} from '../../services/userRequests';
+
 interface State {
     email: string,
     showResetSentMessage: boolean,
@@ -55,14 +57,20 @@ class RetrieveAccountPage extends React.Component<null, State> {
     }
 
     sendPasswordResetLink = () => {
-        this.setState({
-            showResetSentMessage: true
-        })
-        setTimeout(() => {
-            this.setState({
-                returnToLogin: true
+        requestResetPassword(this.state.email)
+            .then(res => {
+                console.log(res)
+                // this.setState({
+                //     showResetSentMessage: true
+                // })
+                // setTimeout(() => {
+                //     this.setState({
+                //         returnToLogin: true
+                //     })
+                // },1000)
             })
-        },1000)
+            .catch(err => console.error(err))
+        
     }
 }
 

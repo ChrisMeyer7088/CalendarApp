@@ -3,6 +3,12 @@ export interface PostUser {
     password: string
 }
 
+export interface RegisterUser {
+    username: string,
+    password: string,
+    email: string
+}
+
 export interface Notice {
     title: string,
     beginDate: Date,

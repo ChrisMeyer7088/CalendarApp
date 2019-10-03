@@ -1,16 +1,17 @@
 process.env.NODE_ENV = 'test'
 const expect = require('chai').expect
 const {createToken, deleteToken, checkForActiveToken, getAssociatedUser} = require('../../db/models/token');
-const { getUser, createNewUser, removeUserByUsername } = require('../../db/models/users');
+const { getUserByUsername, createNewUser, removeUserByUsername } = require('../../db/models/users');
 require('../_setup')
 
 
 let username = "TestTokenUser1";
 let password = "Asdobo12ub"
+let email = "tokenEmail@gmail.com"
 let userId = 0;
 before("Clear DB and create user", () => {
-    return createNewUser(username, password)
-    .then(result => getUser(username))
+    return createNewUser(username, password, email)
+    .then(result => getUserByUsername(username))
     .then(result => userId = result.rows[0].id)
 })
 describe("#dbTokenQuery", () => {

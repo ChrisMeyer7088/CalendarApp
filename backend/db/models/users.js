@@ -44,25 +44,25 @@ function createUsersTable() {
     })
 }
 
-function createUserQueryInfo(username, password) {
+function createUserQueryInfo(username, password, email) {
     return new Promise((resolve, reject) => {
         bcrypt.genSalt(10, (err, salt) => {
             if(err) reject(err);
             bcrypt.hash(password, salt, (err, hash) => {
                 if(err) reject(err);
-                resolve([username, hash, salt]);
+                resolve([username, hash, salt, email]);
             })
         })
     })
 }
 
-function createNewUser(username, password) {
+function createNewUser(username, password, email) {
     return new Promise((resolve, reject) => {
-        createUserQueryInfo(username, password)
+        createUserQueryInfo(username, password, email)
             .then(values => {
                 let queryString = `
-                    INSERT INTO users (username, passwordHash, salt)
-                    VALUES($1, $2, $3);
+                    INSERT INTO users (username, passwordHash, salt, email)
+                    VALUES($1, $2, $3, $4);
                 `
                 return pool.query(queryString, values)
             })
@@ -71,20 +71,41 @@ function createNewUser(username, password) {
     })
 }
 
-function getUser(username) {
+function getUserByUsername(username) {
     return new Promise((resolve, reject) => {
         let queryString = `
             SELECT 
                 id,
                 username,
                 passwordHash,
-                salt 
+                salt,
+                email
             FROM 
                 users 
             WHERE 
                 username = $1;
         `
         pool.query(queryString, [username])
+            .then(result => resolve(result))
+            .catch(err => reject(err))
+    })
+}
+
+function getUserByEmail(email) {
+    return new Promise((resolve, reject) => {
+        let queryString = `
+            SELECT 
+                id,
+                username,
+                passwordHash,
+                salt,
+                email
+            FROM 
+                users 
+            WHERE 
+                email = $1;
+        `
+        pool.query(queryString, [email])
             .then(result => resolve(result))
             .catch(err => reject(err))
     })
@@ -109,7 +130,7 @@ function checkUserCredentials(username, password) {
     return new Promise((resolve, reject) => {
         if(!username) throw Error("Username cannot be empty")
         if(!password) throw Error("Password cannot be empty")
-        getUser(username, password)
+        getUserByUsername(username)
             .then(queryResult => {
                 if(queryResult.rowCount === 1) {
                     let existingUser = queryResult.rows[0];
@@ -155,7 +176,8 @@ module.exports = {
     createUsersTable,
     dropUsersTable,
     createNewUser,
-    getUser,
+    getUserByUsername,
+    getUserByEmail,
     checkUserCredentials,
     getUsers,
     removeUserByUsername

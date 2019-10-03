@@ -1,11 +1,11 @@
 const express = require("express");
 const router = express.Router();
-const { createNewUser, getUser, checkUserCredentials } = require('../db/models/users')
+const { createNewUser, getUserByUsername, checkUserCredentials } = require('../db/models/users')
 const { createToken, checkForActiveToken, getAssociatedUser } = require('../db/models/token');
-const { validatePassword } = require('../services/userServices')
+const { validatePassword, validateEmail } = require('../services/userServices')
 
 router.post('/register', (req, res, next) => {
-    if(!req.body.username || !req.body.password) {
+    if(!req.body.username || !req.body.password || !req.body.email) {
         res.status(400).json({
             type: "registration.register",
             data: {
@@ -21,11 +21,19 @@ router.post('/register', (req, res, next) => {
             },
             success: true
         })
+    } if(!validateEmail(req.body.email)) {
+        res.status(400).json({
+            type: "registration.register",
+            data: {
+                message: "Invalid Email"
+            },
+            success: true
+        })
     } else {
-        getUser(req.body.username)
+        getUserByUsername(req.body.username)
         .then(result => {
             if(result.rowCount === 0) {
-                return createNewUser(req.body.username, req.body.password)
+                return createNewUser(req.body.username, req.body.password, req.body.email)
             } else {
                 res.status(400).json({
                     type: "registration.register",
@@ -70,7 +78,7 @@ router.post('/user', (req, res, next) => {
             success: false
         })
     } else {
-        getUser(req.body.username)
+        getUserByUsername(req.body.username)
         .then(result => {
             if(result.rowCount === 0){
                 res.status(200).json({
@@ -174,6 +182,21 @@ router.post('/login', (req, res, next) => {
                     success: false
                 })
             })
+    }
+})
+
+router.post('/password-reset', (req, res, next) => {
+    if(!req.body || !req.body.email) {
+        res.status(400).json({
+            type: "password.reset",
+            data: {
+                message: "The parameter email is required"
+            },
+            success: false
+        })
+    } else {
+        let email = req.body.email;
+        res.status(200).json({success: req.body.email})
     }
 })
 

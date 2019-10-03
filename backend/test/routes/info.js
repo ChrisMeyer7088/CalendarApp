@@ -13,7 +13,8 @@ describe("#routesInfo", () => {
         before("Register and login a user and retireve the notices", () => {
             let data = {
                 username: "AuthUser1",
-                password: "Asdus72Ds"
+                password: "Asdus72Ds",
+                email: "noticeIT@gmail.com"
             }
             return chai.request(server)
                 .post('/user/register')

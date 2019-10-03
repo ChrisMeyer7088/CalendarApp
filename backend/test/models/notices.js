@@ -1,16 +1,17 @@
 process.env.NODE_ENV = 'test'
 const expect = require("chai").expect;
 const { addNotice, removeNotice, getUserNotices } = require('../../db/models/notices')
-const { getUser, createNewUser, removeUserByUsername } = require('../../db/models/users')
+const { getUserByUsername, createNewUser, removeUserByUsername } = require('../../db/models/users')
 const { getRandomDate, getEventLength} = require('../../db/mock/notices')
 require('../_setup')
 
 let username = "TestNoticeUser1";
-let password = "Asdobo12ub"
+let password = "Asdobo12ub";
+let email = "noticesEmail@gmail.com"
 let userId = 0;
 before("Create user", () => {
-    return createNewUser(username, password)
-    .then(result => getUser(username))
+    return createNewUser(username, password, email)
+    .then(result => getUserByUsername(username))
     .then(result => userId = result.rows[0].id)
 })
 describe("#dbNoticesQuery", () => {

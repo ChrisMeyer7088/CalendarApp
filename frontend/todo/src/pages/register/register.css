@@ -1,5 +1,5 @@
 .registration-form {
-  height: 40%;
+  height: 45%;
 }
 
 .invalid-field {
@@ -11,7 +11,9 @@
 }
 
 .error-message {
-  margin: auto;
+  display: flex;
+  justify-content: center;
+  align-items: center;
   font-size: 12px;
   margin-top: 6px;
   min-height: 30px;

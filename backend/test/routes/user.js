@@ -12,7 +12,8 @@ describe('#routesUser', () => {
         it("Should add a new user", () => {
             let data = {
                 username: "RouteUser1",
-                password: "Aasjkhvasf5"
+                password: "Aasjkhvasf5",
+                email: "routesUserIT@test.com"
             }
             chai.request(server)
                 .post('/user/register')
@@ -36,7 +37,8 @@ describe('#routesUser', () => {
         it("Should fail to register", () => {
             let data = {
                 username: "RouteUser3",
-                password: "password"
+                password: "password",
+                email: "routesUserIT1@test.com"
             }
             chai.request(server)
                 .post('/user/register')
@@ -48,7 +50,8 @@ describe('#routesUser', () => {
         it("Should fail to register a duplicate username", () => {
             let data = {
                 username: "RouteUser6",
-                password: "Aasjkhvasf5"
+                password: "Aasjkhvasf5",
+                email: "routesUserIT2@test.com"
             }
             chai.request(server)
                 .post('/user/register')
@@ -84,7 +87,7 @@ describe('#routesUser', () => {
             }
             chai.request(server)
                 .post('/user/register')
-                .send({username: data.username, password: "123!@#asdASD"})
+                .send({username: data.username, password: "123!@#asdASD", email: "routesUserIT3@test.com"})
                 .then(() => {
                     chai.request(server)
                     .post('/user/user')
@@ -109,7 +112,8 @@ describe('#routesUser', () => {
         it("Should succed in login", () => {
             let data = {
                 username: "RouteUser8",
-                password: "ASDasdi12ns"
+                password: "ASDasdi12ns",
+                email: "routesUserIT4@test.com"
             }
             chai.request(server)
                 .post('/user/register')
@@ -128,7 +132,8 @@ describe('#routesUser', () => {
         it("Should fail in login with invalid password", () => {
             let data = {
                 username: "RouteUser9",
-                password: "ASDasdi12ns"
+                password: "ASDasdi12ns",
+                email: "routesUserIT5@test.com"
             }
             chai.request(server)
                 .post('/user/register')
@@ -147,7 +152,8 @@ describe('#routesUser', () => {
         it("Should fail in login with invalid username", () => {
             let data = {
                 username: "RouteUser10",
-                password: "ASDasdi12ns"
+                password: "ASDasdi12ns",
+                email: "routesUserIT6@test.com"
             }
             chai.request(server)
                 .post('/user/register')
