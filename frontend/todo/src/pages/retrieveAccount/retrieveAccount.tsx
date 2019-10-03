@@ -60,14 +60,14 @@ class RetrieveAccountPage extends React.Component<null, State> {
         requestResetPassword(this.state.email)
             .then(res => {
                 console.log(res)
-                // this.setState({
-                //     showResetSentMessage: true
-                // })
-                // setTimeout(() => {
-                //     this.setState({
-                //         returnToLogin: true
-                //     })
-                // },1000)
+                this.setState({
+                    showResetSentMessage: true
+                })
+                setTimeout(() => {
+                    this.setState({
+                        returnToLogin: true
+                    })
+                },1000)
             })
             .catch(err => console.error(err))
         

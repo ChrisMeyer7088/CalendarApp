@@ -1,4 +1,5 @@
 const pg = require('pg');
+const { generateTokenValue } = require('./token')
 const { DBHost, DBName, DBPass, DBUser } = require('../../config')
 const Pool = pg.Pool;
 const pool = new Pool({
@@ -45,7 +46,42 @@ function dropTableResetLink() {
     })
 }
 
+function createResetLink(userId) {
+    return new Promise((resolve, reject) => {
+        let queryString = `
+            INSERT into resetlink(userId, ts, value)
+            VALUES ($1, to_timestamp($2 / 1000.0), $3)
+        `
+        generateTokenValue(userId)
+            .then(value => {
+                return pool.query(queryString, [userId, Date.now(), value])
+            })
+            .then(result => resolve(result))
+            .catch(err => reject(err))
+    })
+}
+
+function getActiveResetLink(userId) {
+    return new Promise((resolve, reject) => {
+        let queryString = `
+        SELECT 
+            value
+        FROM 
+            resetlink
+        WHERE
+            userId = $1 AND
+            ts > to_timestamp(${Date.now() - (1 + 60 * 60 * 1000)} / 1000.0)    
+        `
+
+        pool.query(queryString, [userId])
+        .then(result => resolve(result))
+        .catch(err => reject(err))
+    })
+}
+
 module.exports = {
     createTableResetLink,
-    dropTableResetLink
+    dropTableResetLink,
+    createResetLink,
+    getActiveResetLink
 }

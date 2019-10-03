@@ -2,7 +2,8 @@ const express = require("express");
 const router = express.Router();
 const { createNewUser, getUserByUsername, checkUserCredentials, getUserByEmail } = require('../db/models/users')
 const { createToken, checkForActiveToken } = require('../db/models/token');
-const { validatePassword, validateEmail } = require('../services/userServices')
+const { validatePassword, validateEmail, sendMail } = require('../services/userServices')
+const { createResetLink, getActiveResetLink } = require('../db/models/resetLink');
 
 router.post('/register', (req, res, next) => {
     if(!req.body.username || !req.body.password || !req.body.email) {
@@ -244,9 +245,25 @@ router.post('/password-reset', (req, res, next) => {
         })
     } else {
         let email = req.body.email;
+        let userId = ''
         getUserByEmail(email)
             .then(result => {
-                let userId = result.rows[0].id;
+                userId = result.rows[0].id;
+                return createResetLink(userId)
+            })
+            .then(result => getActiveResetLink(userId))
+            .then(result => {
+                let value = result.rows[0].value;
+                let subject = "Password Reset Link for My Private Calender";
+                let body = `Click the following link to reset your password, link expires in 1 hour.
+                    \nhttp://localhost:3000/password-reset#${value}
+
+                    Thanks for your continued support!
+                    -Private Calender Team
+                `
+                return sendMail(email, subject, body)
+            })
+            .then(result => {
                 res.status(200).json({
                     type: "password.reset",
                     data: {

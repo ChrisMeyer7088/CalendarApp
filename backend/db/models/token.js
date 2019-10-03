@@ -133,5 +133,6 @@ module.exports = {
     createToken,
     checkForActiveToken,
     getAssociatedUser,
-    deleteToken
+    deleteToken,
+    generateTokenValue
 }
