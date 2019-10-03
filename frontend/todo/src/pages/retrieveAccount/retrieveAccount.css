@@ -1,0 +1,10 @@
+.reset-popup {
+    position: absolute;
+    background-color: rgb(85, 85, 85);
+    width: 125px;
+    padding: 12px;
+    border-radius: 16px;
+    left: 37%;
+    top: 65%;
+    opacity: .8;
+}

@@ -6,6 +6,7 @@ import * as serviceWorker from './serviceWorker';
 import HomePage from './pages/home/home';
 import LoginPage from './pages/login/login';
 import RegistrationPage from './pages/register/register';
+import RetrieveAccountPage from './pages/retrieveAccount/retrieveAccount';
 // import AuthenticationContainer from './services/authentication'
 
 const routing = (
@@ -14,6 +15,7 @@ const routing = (
             <Route path='/home' render = {() => <HomePage />} />
             <Route path='/login' render = {() => <LoginPage />} />
             <Route path='/register' render = {() => <RegistrationPage />} />
+            <Route path='/password-reset' render = {() => <RetrieveAccountPage />} />
             <Route render = {() => <Redirect to={{pathname:"/home"}} />} />
         </Switch>
     </Router>

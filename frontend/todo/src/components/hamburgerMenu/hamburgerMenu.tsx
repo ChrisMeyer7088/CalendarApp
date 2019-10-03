@@ -15,7 +15,8 @@ class HamburgerMenu extends React.Component<Props> {
 
         return (
             <div className={containerClass}>
-                <img className="profile-picture" src={require('../../images/emptyProfilePic.png')} />
+                <img className="profile-picture" src={require('../../images/emptyProfilePic.png')} 
+                alt="Something went wrong"/>
             </div>
         )
     }

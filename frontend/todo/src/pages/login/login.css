@@ -59,3 +59,14 @@
     font-size: 15px;
     outline: none;
 }
+
+.page-link {
+    color: rgb(0, 98, 255);
+    text-decoration: none;
+}
+
+.page-link-grey {
+    color: black;
+    opacity: .5;
+    text-decoration: none;
+}

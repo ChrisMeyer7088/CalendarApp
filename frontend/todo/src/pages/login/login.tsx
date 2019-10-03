@@ -50,7 +50,8 @@ class LoginPage extends React.Component<null, State> {
                             </div>
                         </div>
                         <button className="button-submit" onClick={() => loginAttempt()}>Login</button>
-                        <p>Don't have an account? Register <Link to="/register">here!</Link></p>
+                        <p>Don't have an account? <Link className="page-link" to="/register">Register!</Link></p>
+                        <p><Link className="page-link-grey" to="/password-reset">Forgot account?</Link></p>
                     </div>
                 </div>
             </div>

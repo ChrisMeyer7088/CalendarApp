@@ -1,7 +1,6 @@
 import React from 'react';
 import './header.css';
 import AddNoticeButton from '../../components/addNoticeButton/addNoticeButton';
-import HamburgerMenu from '../hamburgerMenu/hamburgerMenu'
 
 interface Props {
     selectedDate: Date,
