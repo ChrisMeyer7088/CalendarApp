@@ -1,5 +1,6 @@
 const pg = require('pg');
 const { generateTokenValue } = require('./token')
+const { updatePassword } = require('./users');
 const { DBHost, DBName, DBPass, DBUser } = require('../../config')
 const Pool = pg.Pool;
 const pool = new Pool({
@@ -79,9 +80,55 @@ function getActiveResetLink(userId) {
     })
 }
 
+function checkLinkValue(value) {
+    return new Promise((resolve, reject) => {
+        let queryString = `
+        SELECT
+            users.email
+        FROM
+            resetlink
+        INNER JOIN 
+            users 
+        ON 
+            resetlink.userId = users.id AND
+            resetlink.value = $1 AND
+            resetlink.ts > to_timestamp(${Date.now() - (1 + 60 * 60 * 1000)} / 1000.0)
+        `
+
+        pool.query(queryString, [value])
+        .then(result => resolve(result))
+        .catch(err => reject(err))
+    })
+}
+
+function resetPassword(value, password) {
+    return new Promise((resolve, reject) => {
+        let queryString = `
+        SELECT
+            userId
+        FROM
+            resetlink
+        WHERE 
+            value = $1 AND
+            ts > to_timestamp(${Date.now() - (1 + 60 * 60 * 1000)} / 1000.0)
+        `
+
+        pool.query(queryString, [value])
+        .then(result => {
+            if(result.rowCount === 1)
+                return updatePassword(password, result.rows[0].userid)
+            else resolve(result)
+        })
+        .then(result => resolve(result))
+        .catch(err => reject(err))
+    })
+}
+
 module.exports = {
     createTableResetLink,
     dropTableResetLink,
     createResetLink,
-    getActiveResetLink
+    getActiveResetLink,
+    checkLinkValue,
+    resetPassword
 }

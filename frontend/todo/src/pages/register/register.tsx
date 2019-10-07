@@ -3,6 +3,7 @@ import { Link, Redirect } from 'react-router-dom';
 import './register.css';
 import { RegisterUser } from '../../interfaces/requests';
 import { requestRegisterUser, requestCheckUsername, requestCheckEmail } from '../../services/userRequests';
+import {getInputClassAndMessage, checkEnterKey, usernameCheck, passwordCheck, emailCheck } from '../../services/inputMessages'
 
 interface State {
     username: string,
@@ -15,11 +16,6 @@ interface State {
     passwordFieldHasBeenSelected: boolean,
     usernameFiedlHasBeenSelected: boolean,
     redirectToLogin: boolean   
-}
-
-interface ValidityMessage {
-    validity:boolean, 
-    message: string
 }
 
 class RegistrationPage extends React.Component<null, State> {
@@ -41,15 +37,15 @@ constructor(props: any) {
 }
 
     render() {
-        const { updateConfirmPassword, updateUsername, updatePassword, registerUser, passwordCheck, usernameCheck,
-            checkEnterKey, updateEmail, getInputClassAndMessage, emailCheck } = this;
+        const { updateConfirmPassword, updateUsername, updatePassword, registerUser,
+            updateEmail } = this;
         const { username, cpassword, password, redirectToLogin, usernameFiedlHasBeenSelected, 
-            passwordFieldHasBeenSelected, email, emailHasBeenSelected } = this.state;
+            passwordFieldHasBeenSelected, email, emailHasBeenSelected, usernameExists, emailExists } = this.state;
         
 
-        let userInputInfo = getInputClassAndMessage(usernameCheck(), usernameFiedlHasBeenSelected);
-        let passwordInputInfo = getInputClassAndMessage(passwordCheck(), passwordFieldHasBeenSelected);
-        let emailInputInfo = getInputClassAndMessage(emailCheck(), emailHasBeenSelected);
+        let userInputInfo = getInputClassAndMessage(usernameCheck(usernameExists, username), usernameFiedlHasBeenSelected);
+        let passwordInputInfo = getInputClassAndMessage(passwordCheck(password, cpassword), passwordFieldHasBeenSelected);
+        let emailInputInfo = getInputClassAndMessage(emailCheck(emailExists, email), emailHasBeenSelected);
 
         let enableRegistration: boolean = (userInputInfo.message === "&#x2713" && 
         "&#x2713" === passwordInputInfo.message && "&#x2713" === emailInputInfo.message);
@@ -85,7 +81,7 @@ constructor(props: any) {
                             </div>
                             <div className="container-input">
                                 <input placeholder="Confirm Password" value={cpassword} onChange={e => updateConfirmPassword(e)} 
-                                type="password" onKeyPress={e => checkEnterKey(e)} className="input-field"></input>
+                                type="password" onKeyPress={e => checkEnterKey(e, registerUser)} className="input-field"></input>
                             </div>
                         </div>
                         <button disabled={!enableRegistration} onClick={() => registerUser()} className="button-submit" >Register</button>
@@ -149,31 +145,6 @@ constructor(props: any) {
         })
     }
 
-    usernameCheck = (): ValidityMessage => {
-        const {usernameExists, username } = this.state;
-        if(usernameExists) return {validity: false, message: "Username Already Exists"};
-        if(username.length === 0) return {validity: false, message: "Username Cannot be Blank"};
-        return {validity: true, message: "Username Is Allowed"};
-    }
-
-    //Gives password message and wether password is valid
-    passwordCheck = (): ValidityMessage => {
-        const { password, cpassword} = this.state
-        if(password.length < 8) return {validity: false, message: "Password must be a minimum of 8 characters"}
-        if(!(/\d/.test(password) && /[A-Z]/.test(password))) return {validity: false, 
-            message: "Password must contain at least 1 number and 1 uppercase character"}
-        if(password !== cpassword) return {validity: false, message: "Passwords must match"}
-        return {validity: true, message: "Valid Password"}
-    }
-
-    emailCheck = (): ValidityMessage => {
-        const { emailExists, email } = this.state;
-        if(email.length === 0) return {validity: false, message: "Email cannot be blank"}
-        if(!email.includes('@') || !email.includes('.com')) return {validity: false, message: "Must be a valid email"}
-        if(emailExists) return {validity: false, message: "Email already exists"}
-        return {validity: true, message: "Valid Email"}
-    }
-
     //Sends a registration request to the server of the user
     registerUser = () => {
         const requestBody: RegisterUser = {
@@ -193,36 +164,6 @@ constructor(props: any) {
                 })
             })
             .catch(err => console.error(err))
-    }
-
-    checkEnterKey = (e: any) => {
-        if(e.key === "Enter") {
-            this.registerUser();
-        }
-    }
-
-    private getInputClassAndMessage = (data: ValidityMessage, fieldIsSelected: boolean) => {
-        let inputFieldClass = '';
-        let messageClass = '';
-        let message= '';
-        if(!fieldIsSelected) inputFieldClass = "input-field"
-        else {
-            message = data.message;
-            if(data.validity) {
-                message = "&#x2713"
-                inputFieldClass = "input-field valid-field"
-                messageClass = "ok-message"
-            }
-            else {
-                inputFieldClass = "input-field invalid-field"
-                messageClass = "error-message"
-            }
-        }
-        return {
-            inputFieldClass,
-            messageClass,
-            message
-        }
     }
 
 }

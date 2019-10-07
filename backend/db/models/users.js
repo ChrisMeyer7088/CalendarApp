@@ -46,11 +46,19 @@ function createUsersTable() {
 
 function createUserQueryInfo(username, password, email) {
     return new Promise((resolve, reject) => {
+        hashString(password)
+            .then(result => resolve([username, result.hash, result.salt, email]))
+            .catch(err => reject(err))
+    })
+}
+
+function hashString(inputString) {
+    return new Promise((resolve, reject) => {
         bcrypt.genSalt(10, (err, salt) => {
             if(err) reject(err);
-            bcrypt.hash(password, salt, (err, hash) => {
+            bcrypt.hash(inputString, salt, (err, hash) => {
                 if(err) reject(err);
-                resolve([username, hash, salt, email]);
+                resolve({hash, salt});
             })
         })
     })
@@ -164,9 +172,29 @@ function removeUserByUsername(username) {
         let queryString = `
             DELETE FROM users
             WHERE
-                username = $1
+                username = $1;
         `
         pool.query(queryString, [username])
+            .then(result => resolve(result))
+            .catch(err => reject(err))
+    })
+}
+
+function updatePassword(password, userId) {
+    return new Promise((resolve, reject) => {
+        let queryString = `
+        UPDATE
+            users
+        SET
+            passwordHash = $1,
+            salt = $2
+        WHERE
+            id = $3;
+        `
+        hashString(password)
+            .then(values => {
+                return pool.query(queryString, [values.hash, values.salt, userId])
+            })
             .then(result => resolve(result))
             .catch(err => reject(err))
     })
@@ -180,5 +208,6 @@ module.exports = {
     getUserByEmail,
     checkUserCredentials,
     getUsers,
-    removeUserByUsername
+    removeUserByUsername,
+    updatePassword
 }

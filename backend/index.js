@@ -4,6 +4,7 @@ const app = express();
 const appPort = port || "8000";
 const userRoutes = require('./routes/user');
 const infoRoutes = require('./routes/info');
+const passwordResetRoutes = require('./routes/password-reset');
 const cors = require("cors");
 const bodyParser = require("body-parser");
 
@@ -12,6 +13,7 @@ app.use(bodyParser.json());
 
 app.use('/user', userRoutes)
 app.use('/info', infoRoutes)
+app.use('/password-reset', passwordResetRoutes)
 
 app.listen(appPort, () => {
     console.log("application started on port " + port);
