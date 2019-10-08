@@ -14,3 +14,93 @@
     border-radius: 20px;
     color: white;
 }
+
+.container-profileInfo {
+    margin-top: 10%;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+}
+
+.account-profile-picture {
+    width: 300px;
+    height: 300px;
+    border-radius: 360px;
+    margin-bottom: 30px;
+    box-shadow: 5px 5px 5px rgba(0, 0, 0, 0.3);
+}
+
+.account-userInfo {
+    display: inline-block;
+    font-size: 25px;
+    margin-bottom: 45px;
+}
+
+#account-delete-button {
+    background-color: rgb(155, 23, 23);
+    color: white;
+    border-radius: 22px;
+    font-size: 20px;
+    padding: 8px;
+    box-shadow: 5px 5px 5px rgba(0, 0, 0, 0.3);
+    transition: all ease-in-out .3s;
+}
+
+#account-delete-button:hover {
+    cursor: pointer;
+    box-shadow: 15px 15px 5px rgba(0, 0, 0, 0.3);
+    padding: 10px;
+    font-size: 22px;
+    font-weight: bold;
+}
+
+#account-delete-button:focus {
+    outline: none;
+}
+
+.account-delete-form{
+    position: fixed;
+    top: 25%;
+    width: 50%;
+    height: 50%;
+    z-index: 2;
+    background-color: rgba(35, 35, 35, 0.9);
+    border-radius: 30px;
+    box-shadow: 10px 10px 5px rgba(0, 0, 0, 0.3);
+}
+
+.delete-form-text {
+    margin-top: 25%;
+    margin-bottom: 10%;
+    font-size: 28px;
+    font-weight: bolder;
+}
+
+.delete-form-button {
+    border-radius: 25px;
+    color: white;
+    padding: 6px;
+    font-size: 20px;
+    font-weight: bold;
+    margin: 30px;
+    margin-left: 40px;
+    box-shadow: 5px 5px 5px rgba(0, 0, 0, 0.3);
+    transition: all ease-in-out .3s;
+    outline: none;
+}
+
+.delete-form-button:hover {
+    cursor: pointer;
+    box-shadow: 15px 15px 5px rgba(0, 0, 0, 0.3);
+    font-size: 22px;
+    font-weight: bolder;
+}
+
+.green-button {
+    background-color: rgb(122, 175, 43)
+}
+
+.red-button {
+    background-color: red;
+}

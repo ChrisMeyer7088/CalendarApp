@@ -17,3 +17,8 @@ export const getAccountInfo = (token: string) => {
     axios.defaults.headers.common['Authorization'] = token
     return axios.get(baseServerURL + 'account')
 }
+
+export const deleteAccount = (token: string) => {
+    axios.defaults.headers.common['Authorization'] = token
+    return axios.delete(baseServerURL + 'account')
+}

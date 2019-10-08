@@ -1,17 +1,19 @@
 import React from 'react'
 import './account.css';
 import { Redirect } from 'react-router-dom';
-import { getAccountInfo } from '../../services/infoRequests';
+import { getAccountInfo, deleteAccount } from '../../services/infoRequests';
 import HamburgerMenu from '../../components/hamburgerMenu/hamburgerMenu';
 
 interface State {
     token: string,
     redirectToLogin: boolean,
     email: string,
-    username: string
+    username: string,
+    showAccountDeletionForm: boolean
 }
 
 class Account extends React.Component<null, State> {
+    private deleteFormRef = React.createRef<HTMLDivElement>();
     constructor(props: any) {
         super(props);
 
@@ -19,17 +21,23 @@ class Account extends React.Component<null, State> {
             token: localStorage.getItem('token') || '',
             redirectToLogin: false,
             email: '',
-            username: ''
+            username: '',
+            showAccountDeletionForm: false
         }
     }
 
     componentDidMount() {
+        document.addEventListener('mousedown', this.handleClickOutside);     
         this.retrieveAccountInfo();
     }
-    
+
+    componentWillUnmount() {
+        document.removeEventListener('mousedown', this.handleClickOutside)
+    }
+
     render() {
-        const {} = this;
-        const {redirectToLogin} = this.state;
+        const { showDeletionForm, hideDeletionForm, requestAccountDeletion } = this;
+        const {redirectToLogin, email, username, showAccountDeletionForm} = this.state;
 
         if(redirectToLogin) {
             return (<Redirect to="/login"/>)
@@ -40,8 +48,17 @@ class Account extends React.Component<null, State> {
                 <HamburgerMenu initalState={false}/>
                 <div id="container-account-page">
                     <div id="container-account-form">
-                        <div>
-                            
+                        <div className="container-profileInfo">
+                            <img className="account-profile-picture" src={require('../../images/emptyProfilePic.png')} 
+                            alt="Something went wrong"/>
+                            <div ref={this.deleteFormRef} className="account-delete-form" hidden={!showAccountDeletionForm}>
+                                <div className="delete-form-text">Are you sure you want to delete your account?</div>
+                                <button onClick={() => requestAccountDeletion()} className="delete-form-button red-button">YES, DELETE MY ACCOUNT</button>
+                                <button onClick={() => hideDeletionForm()} className="delete-form-button green-button">NO, BACK TO SAFETY</button>
+                            </div>
+                            <div className="account-userInfo">Username: {username}</div>
+                            <div className="account-userInfo">Email: {email}</div>
+                            <div><button onClick={() => showDeletionForm()} id="account-delete-button">Delete Account</button></div>
                         </div>
                     </div>
                 </div>
@@ -71,6 +88,35 @@ class Account extends React.Component<null, State> {
                     })
                 }
             })
+    }
+
+    showDeletionForm = () => {
+        this.setState({
+            showAccountDeletionForm: true
+        })
+    }
+
+    hideDeletionForm = () => {
+        this.setState({
+            showAccountDeletionForm: false
+        })
+    }
+
+    handleClickOutside = (event: any) => {
+        let node = this.deleteFormRef.current;
+        if(node && !node.contains(event.target))
+            this.hideDeletionForm()
+    }
+
+    requestAccountDeletion = () => {
+        const { token } = this.state;
+        deleteAccount(token)
+        .then(res => {
+            console.log(res)
+        })
+        .catch(err => {
+            console.error(err)
+        })
     }
 }
 

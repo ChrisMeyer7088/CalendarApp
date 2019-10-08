@@ -57,6 +57,16 @@ router.get('/account', authenticateToken, (req, res, next) => {
         })
 })
 
+router.delete("/account", authenticateToken, (req, res, next) => {
+    res.status(200).json({
+        type: "info.Accountdelete",
+            data: {
+                message: "Account deleted"
+            },
+            success: true
+    })
+})
+
 router.post("/notice", authenticateToken, (req, res, next) => {
     let notice = req.body.notice;
     if(!notice || !notice.title || !notice.beginDate || !notice.endDate || !notice.color || !notice.userId) {
