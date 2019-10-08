@@ -21,7 +21,7 @@ router.post('/register', (req, res, next) => {
             },
             success: true
         })
-    } if(!validateEmail(req.body.email)) {
+    } else if(!validateEmail(req.body.email)) {
         res.status(400).json({
             type: "registration.register",
             data: {
