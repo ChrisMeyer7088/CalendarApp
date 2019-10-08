@@ -12,3 +12,8 @@ export const postNotice = (token: string, notice: Notice) => {
     axios.defaults.headers.common['Authorization'] = token
     return axios.post(baseServerURL + "notice", {notice})
 }
+
+export const getAccountInfo = (token: string) => {
+    axios.defaults.headers.common['Authorization'] = token
+    return axios.get(baseServerURL + 'account')
+}

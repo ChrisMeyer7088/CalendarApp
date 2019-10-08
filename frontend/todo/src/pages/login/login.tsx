@@ -82,7 +82,7 @@ class LoginPage extends React.Component<null, State> {
         requestLoginUser(requestBody)
             .then(res => {
                 if(res.data.data.loggedIn) {
-                    sessionStorage.setItem("token", res.data.data.token)
+                    localStorage.setItem("token", res.data.data.token)
                     this.setState({
                         redirectToHome: true,
                         attemptedLogin: false,

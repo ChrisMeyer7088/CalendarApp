@@ -1,24 +1,109 @@
 import React from 'react';
 import './hamburgerMenu.css';
+import { getAccountInfo } from '../../services/infoRequests';
+import { Redirect, Link } from 'react-router-dom';
 
 interface Props {
-    showMenu: boolean
+    initalState?: boolean
 }
 
-class HamburgerMenu extends React.Component<Props> {
+interface State {
+    token: string,
+    redirectToLogin: boolean,
+    username: string,
+    showMenu: boolean,
+    menuInTransition: boolean
+}
+
+class HamburgerMenu extends React.Component<Props, State> {
+    constructor(props: any) {
+        super(props);
+        
+        let defaultMenuState: boolean = true;
+        if(this.props.initalState === false) defaultMenuState = false;
+
+        this.state = {
+            token: localStorage.getItem('token') || '',
+            username: '',
+            redirectToLogin: false,
+            showMenu: defaultMenuState,
+            menuInTransition: false
+        }
+    }
+
+    componentDidMount() {
+        this.retrieveAccountInfo();
+    }
 
     render() {
-        const { showMenu } = this.props;
+        const { toggleMenu } = this;
+        const { redirectToLogin, username, showMenu, menuInTransition } = this.state;
 
-        let containerClass = "hamburger-container hide"
-        if(showMenu) containerClass = "hamburger-container"
+        if(redirectToLogin) {
+            return (<Redirect to="/login"/>)
+        }
+
+        let menuContainerClass = "hamburger-container"
+        
+        if(menuInTransition) menuContainerClass = "hamburger-container hide"
+
+        if(showMenu || menuInTransition) {
+            return (
+                <div className={menuContainerClass}>
+                    <div className="hamburger-button-container">
+                        <div className="hamburger-button-main" onClick={() => toggleMenu()} dangerouslySetInnerHTML={{__html: "&#x2630"}}></div>
+                    </div>
+                    <div className="container-profilePic">
+                        <img className="profile-picture" src={require('../../images/emptyProfilePic.png')} 
+                        alt="Something went wrong"/>
+                        <div className="wrapper-username">{username}</div>
+                    </div>
+                    <ul className="menu-list">
+                        <Link className="menu-element-link" to="/home"><li className="wrapper-menu-element"><div>My Calendar</div></li></Link>
+                        <Link className="menu-element-link" to="/account"><li className="wrapper-menu-element"><div>Account</div></li></Link>
+                    </ul>
+                </div>
+            )
+        }
 
         return (
-            <div className={containerClass}>
-                <img className="profile-picture" src={require('../../images/emptyProfilePic.png')} 
-                alt="Something went wrong"/>
-            </div>
+            <div className="hamburger-button-fixed" onClick={() => toggleMenu()} dangerouslySetInnerHTML={{__html: "&#x2630"}}></div>
         )
+    }
+
+    retrieveAccountInfo = () => {
+        getAccountInfo(this.state.token)
+            .then(res => {
+                let data = res.data.data;
+                if(data.returnToLogin) {
+                    this.setState({
+                        redirectToLogin: true
+                    })
+                } else {
+                    this.setState({
+                        username: data.username
+                    })
+                }
+            })
+    }
+
+    toggleMenu = () => {
+        let newMenuState = !this.state.showMenu;
+
+        //Gives the menu time to preform its transition animation
+        if(!newMenuState) {
+            this.setState({
+                menuInTransition: true
+            })
+            setTimeout(() => {
+                this.setState({
+                    menuInTransition: false
+                })
+            }, 350)
+        }
+        this.setState({
+            showMenu: newMenuState
+        })
     }
 }
 

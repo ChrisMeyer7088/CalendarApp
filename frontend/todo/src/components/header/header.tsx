@@ -6,8 +6,7 @@ interface Props {
     selectedDate: Date,
     token: string,
     returnToLogin: any,
-    setMonth: any,
-    toggleMenu: any
+    setMonth: any
 }
 
 class Header extends React.Component<Props> {
@@ -15,12 +14,11 @@ class Header extends React.Component<Props> {
     "October", "November", "December"];
 
     render() {
-        const { token, returnToLogin, selectedDate, toggleMenu } = this.props;
+        const { token, returnToLogin, selectedDate } = this.props;
         const { renderCalendarMonth, renderCalendarYear} = this;
         return (
             <div className="container-header">
                 <div className="header">
-                    <div className="hamburgermenu-button-main" onClick={() => toggleMenu()} dangerouslySetInnerHTML={{__html: "&#x2630"}}></div>
                     <AddNoticeButton token={token} returnToLogin={returnToLogin} selectedDate={selectedDate}/>
                     {renderCalendarMonth()}
                     {renderCalendarYear()}

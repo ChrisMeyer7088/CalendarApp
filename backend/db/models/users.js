@@ -119,6 +119,24 @@ function getUserByEmail(email) {
     })
 }
 
+function getUserById(userId) {
+    return new Promise((resolve, reject) => {
+        let queryString = `
+        SELECT
+            id,
+            username,
+            email
+        FROM
+            users
+        WHERE
+            id = $1;
+        `
+        pool.query(queryString, [userId])
+            .then(result => resolve(result))
+            .catch(err => reject(err))
+    })
+}
+
 function getUsers() {
     return new Promise((resolve, reject) => {
         let queryString = `
@@ -209,5 +227,6 @@ module.exports = {
     checkUserCredentials,
     getUsers,
     removeUserByUsername,
-    updatePassword
+    updatePassword,
+    getUserById
 }

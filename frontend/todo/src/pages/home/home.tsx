@@ -10,8 +10,7 @@ interface State {
     token: string,
     redirectToLogin: boolean,
     notices: Object[],
-    selectedDate: Date,
-    showMenu: boolean
+    selectedDate: Date
 }
 
 class HomePage extends React.Component<null, State> {
@@ -21,27 +20,26 @@ class HomePage extends React.Component<null, State> {
         super(props);
         this.state = {
             userId: "",
-            token: sessionStorage.getItem("token") || "",
+            token: localStorage.getItem("token") || "",
             redirectToLogin: false,
             notices: [],
             selectedDate: new Date(),
-            showMenu: true
         }
         this.retrieveNotices();
     }
 
     render() {
-        const { returnToLogin, renderCalendarDayHeaders, renderCalendarDays, setMonth, toggleMenu } = this;
-        const { redirectToLogin, token, selectedDate, showMenu } = this.state
+        const { returnToLogin, renderCalendarDayHeaders, renderCalendarDays, setMonth } = this;
+        const { redirectToLogin, token, selectedDate } = this.state
 
         if(redirectToLogin) {
             return (<Redirect to="/login"/>)
         }
         return (
-            <div id="container-content">
-                <HamburgerMenu showMenu={showMenu}/>
+            <div className="container-content">
+                <HamburgerMenu />
                 <div className="flex-container">
-                    <Header toggleMenu={toggleMenu} selectedDate={selectedDate} token={token} returnToLogin={returnToLogin} 
+                    <Header selectedDate={selectedDate} token={token} returnToLogin={returnToLogin} 
                     setMonth={setMonth} />
                     <div className="container-calender">
                         <table id="calendar">
@@ -141,7 +139,7 @@ class HomePage extends React.Component<null, State> {
     }
 
     returnToLogin = () => {
-        sessionStorage.removeItem('token')
+        localStorage.removeItem('token')
         this.setState({
             redirectToLogin: true
         })
@@ -158,12 +156,6 @@ class HomePage extends React.Component<null, State> {
         selectedDate.setMonth(newMonth);
         this.setState({
             selectedDate
-        })
-    }
-
-    toggleMenu = () => {
-        this.setState({
-            showMenu: !this.state.showMenu
         })
     }
 
