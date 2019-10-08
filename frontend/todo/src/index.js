@@ -17,7 +17,7 @@ const routing = (
             <Route path='/register' render = {() => <RegistrationPage />} />
             <Route path='/password-reset' render = {() => <RetrieveAccountPage />} />
             <Route path='/account' render={() => <AccountPage />} />
-            <Route render = {() => <Redirect to={{pathname:"/home"}} />} />
+            <Route render = {() => <Redirect to={{pathname:"/login"}} />} />
         </Switch>
     </Router>
 )

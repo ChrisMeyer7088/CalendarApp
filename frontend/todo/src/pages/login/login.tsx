@@ -34,7 +34,7 @@ class LoginPage extends React.Component<null, State> {
         return (
             <div className="container-main">
                 <div className="login-form">
-                    <div className="container-login-data">
+                    <div onKeyPress={e => checkEnterKey(e)} className="container-login-data">
                         <h1 className="login-header">Sign In:</h1>
                         <div hidden={!attemptedLogin}>
                             <p className="warningText">Invalid Username or Password</p>
@@ -46,7 +46,7 @@ class LoginPage extends React.Component<null, State> {
                             </div>
                             <div className="container-input">
                                 <input placeholder="Password" value={password} onChange={e => updatePassword(e)} type="password"
-                                onKeyPress={e => checkEnterKey(e)} className="input-field"></input>
+                                className="input-field"></input>
                             </div>
                         </div>
                         <button className="button-submit" onClick={() => loginAttempt()}>Login</button>
@@ -57,6 +57,14 @@ class LoginPage extends React.Component<null, State> {
             </div>
             
         )
+    }
+
+    componentDidMount() {
+        if(localStorage.getItem('token')) {
+            this.setState({
+                redirectToHome: true
+            })
+        }
     }
 
     updateUsername = (event: any) => {

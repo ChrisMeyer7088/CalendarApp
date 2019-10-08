@@ -44,8 +44,13 @@ class HamburgerMenu extends React.Component<Props, State> {
         }
 
         let menuContainerClass = "hamburger-container"
-        
-        if(menuInTransition) menuContainerClass = "hamburger-container hide"
+        let profilePictureClass = "profile-picture"
+        let menuElementClass = "menu-element-link"
+        if(menuInTransition){
+                profilePictureClass = "profile-picture hide"
+                menuContainerClass = "hamburger-container hide"
+                menuElementClass = "menu-element-link hide"
+            }
 
         if(showMenu || menuInTransition) {
             return (
@@ -54,13 +59,13 @@ class HamburgerMenu extends React.Component<Props, State> {
                         <div className="hamburger-button-main" onClick={() => toggleMenu()} dangerouslySetInnerHTML={{__html: "&#x2630"}}></div>
                     </div>
                     <div className="container-profilePic">
-                        <img className="profile-picture" src={require('../../images/emptyProfilePic.png')} 
+                        <img className={profilePictureClass} src={require('../../images/emptyProfilePic.png')} 
                         alt="Something went wrong"/>
                         <div className="wrapper-username">{username}</div>
                     </div>
                     <ul className="menu-list">
-                        <Link className="menu-element-link" to="/home"><li className="wrapper-menu-element"><div>My Calendar</div></li></Link>
-                        <Link className="menu-element-link" to="/account"><li className="wrapper-menu-element"><div>Account</div></li></Link>
+                        <Link className={menuElementClass} to="/home"><li className="wrapper-menu-element"><div>My Calendar</div></li></Link>
+                        <Link className={menuElementClass} to="/account"><li className="wrapper-menu-element"><div>Account</div></li></Link>
                     </ul>
                 </div>
             )
