@@ -3,7 +3,7 @@
 ## Description
 Calendar web application using React on the frontend, NodeJS-Express on the backend and Postgres as the database layer. Unit and Integration testing in this project is done using Mocha and Chai. Web application is built using MVC style architecture.
 
-## Functionality
+## Functionality (v1.0)
 This application will provide the following functionality:
 * Registration and Login of users
 * Login of user through Google Sign-in for seamless authorization
