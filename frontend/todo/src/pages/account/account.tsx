@@ -36,7 +36,7 @@ class Account extends React.Component<null, State> {
     }
 
     render() {
-        const { showDeletionForm, hideDeletionForm, requestAccountDeletion } = this;
+        const { showDeletionForm, hideDeletionForm, requestAccountDeletion, deleteToken } = this;
         const {redirectToLogin, email, username, showAccountDeletionForm} = this.state;
 
         if(redirectToLogin) {
@@ -58,6 +58,7 @@ class Account extends React.Component<null, State> {
                             </div>
                             <div className="account-userInfo">Username: {username}</div>
                             <div className="account-userInfo">Email: {email}</div>
+                            <div><button onClick={() => deleteToken()} className="account-logout-button">Logout</button></div>
                             <div><button onClick={() => showDeletionForm()} id="account-delete-button">Delete Account</button></div>
                         </div>
                     </div>
@@ -112,10 +113,19 @@ class Account extends React.Component<null, State> {
         const { token } = this.state;
         deleteAccount(token)
         .then(res => {
-            console.log(res)
+            if(res.status === 200) {
+                this.deleteToken();
+            }
         })
         .catch(err => {
             console.error(err)
+        })
+    }
+
+    deleteToken = () => {
+        localStorage.clear();
+        this.setState({
+            redirectToLogin: true
         })
     }
 }

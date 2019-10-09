@@ -41,9 +41,26 @@ function createCalendarTable() {
             })
             .catch(err => reject(err))
     })
-} 
+}
+
+function deleteEntriesByUserId(userId) {
+    return new Promise((resolve, reject) => {
+        let queryString = `
+        DELETE FROM calendar
+        WHERE
+            userId = $1;
+        `
+
+        pool.query(queryString, [userId])
+            .then(result => {
+                resolve(result)
+            })
+            .catch(err => reject(err))
+    })
+}
 
 module.exports = {
     createCalendarTable,
-    dropCalendarTable
+    dropCalendarTable,
+    deleteEntriesByUserId
 }

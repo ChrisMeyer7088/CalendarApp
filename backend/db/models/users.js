@@ -218,6 +218,22 @@ function updatePassword(password, userId) {
     })
 }
 
+function deleteUserById(userId) {
+    return new Promise((resolve, reject) => {
+        let queryString = `
+        DELETE FROM users
+        WHERE
+            id = $1;
+        `
+
+        pool.query(queryString, [userId])
+            .then(result => {
+                resolve(result)
+            })
+            .catch(err => reject(err))
+    })
+}
+
 module.exports = {
     createUsersTable,
     dropUsersTable,
@@ -228,5 +244,6 @@ module.exports = {
     getUsers,
     removeUserByUsername,
     updatePassword,
-    getUserById
+    getUserById,
+    deleteUserById
 }

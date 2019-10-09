@@ -1,7 +1,7 @@
 const express = require("express");
 const router = express.Router();
 const { getUserNotices } = require('../db/models/notices');
-const { getUserById } = require('../db/models/users');
+const { getUserById, deleteUserById } = require('../db/models/users');
 const { authenticateToken } = require('../services/infoServices')
 
 router.get("/notices", authenticateToken, (req, res, next) => {
@@ -58,13 +58,28 @@ router.get('/account', authenticateToken, (req, res, next) => {
 })
 
 router.delete("/account", authenticateToken, (req, res, next) => {
-    res.status(200).json({
-        type: "info.Accountdelete",
-            data: {
-                message: "Account deleted"
-            },
-            success: true
+    deleteUserById(req.body.userId)
+    .then(result => {
+        console.log(result)
+        res.status(200).json({
+            type: "info.AccountDelete",
+                data: {
+                    message: "Account deleted"
+                },
+                success: true
+        })
     })
+    .catch(err => {
+        console.log(err)
+        res.status(500).json({
+            type: "info.AccountDelete",
+                data: {
+                    message: "Something went wrong"
+                },
+                success: false
+        })
+    })
+    
 })
 
 router.post("/notice", authenticateToken, (req, res, next) => {
