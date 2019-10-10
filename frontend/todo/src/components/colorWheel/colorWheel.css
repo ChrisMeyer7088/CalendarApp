@@ -17,3 +17,7 @@
 .colorWheel-trigger:focus {
     outline: none;
 }
+
+.popup-colorSelector {
+    position: fixed;
+}

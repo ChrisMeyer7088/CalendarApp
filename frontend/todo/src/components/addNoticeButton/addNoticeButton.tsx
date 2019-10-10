@@ -38,7 +38,7 @@ class AddNoticeButton extends React.Component<Props, State> {
 
     render() {
         const { renderTitle, dateToStringFormat, renderStartDate, renderEndDate, renderDescription, 
-            updateBeginDate, updateEndDate, getColor } = this;
+            updateBeginDate, updateEndDate, updateColor } = this;
         const { title, beginDate, endDate, description } = this.state.notice;
         let beginDateFormatted = dateToStringFormat(beginDate)
         let endDateFormatted = dateToStringFormat(endDate)
@@ -69,7 +69,7 @@ class AddNoticeButton extends React.Component<Props, State> {
                             </div>
                         </div>
                         <div>
-                            <ColorWheel getColor={getColor} />
+                            <ColorWheel onChange={updateColor} />
                         </div>
                         <div className="popup-item">
                             <textarea className="popup-details" placeholder="Event Notes" value={description} onChange={e => renderDescription(e)}></textarea>
@@ -114,7 +114,7 @@ class AddNoticeButton extends React.Component<Props, State> {
         this.setState({})
     }
 
-    getColor = (color: string) => {
+    updateColor = (color: string) => {
         let notice = this.state.notice;
         notice.color = color;
         this.setState({

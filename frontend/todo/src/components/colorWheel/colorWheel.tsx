@@ -1,61 +1,70 @@
 import React from 'react';
 import './colorWheel.css';
+import { SketchPicker } from 'react-color';
 
 interface Props {
-    getColor: any;
-    initalRed?: number;
-    initalBlue?: number;
-    initalGreen?: number;
+    onChange: any;
 }
 
 interface State {
-    red: number;
-    green: number;
-    blue: number;
+    color: string
     showWheel: boolean;
 }
 
 class ColorWheel extends React.Component<Props, State> {
+    private colorWheelRef = React.createRef<HTMLDivElement>();
     constructor(props: any) {
         super(props);
-        const { initalBlue, initalGreen, initalRed} = this.props;
+
         this.state = {
-            red: initalRed || 0,
-            green: initalGreen || 200,
-            blue: initalBlue || 255,
-            showWheel: false
+            color: '#ffffff',
+            showWheel: false,
         }
     }
 
-    render() {
-        const { getAllColorsAsHex } = this;
-        const { showWheel } = this.state;
+    componentDidMount() {
+        document.addEventListener('mousedown', this.handleClickOutside)
+    }
 
-        console.log(getAllColorsAsHex())
-        let triggerStyle = {
-            backgroundColor: getAllColorsAsHex()
-        }
+    componentWillUnmount() {
+        document.removeEventListener('mousedown', this.handleClickOutside)
+    }
+
+    render() {
+        const { toggleColorPicker, handleChange } = this;
+        const { showWheel, color } = this.state;
+
+        let colorWheelStyle = {backgroundColor: color}
+
         return (
             <div className="container-colorWheel">
-                <button className="colorWheel-trigger" style={triggerStyle}></button>
-                <div hidden={!showWheel}>
-
+                <button onClick={() => toggleColorPicker(true)} className="colorWheel-trigger" style={colorWheelStyle}></button>
+                <div className="popup-colorSelector" ref={this.colorWheelRef} hidden={!showWheel}>
+                    <SketchPicker color={color} onChange={handleChange} />
                 </div>
             </div>
         )
     }
 
-    numberToHex = (number: number): string => {
-        let hex: string = number.toString(16);
-        if(hex.length === 1) hex = hex + '0'
-        return hex;
+    handleChange = (color: any) => {
+        if(color && color.hex) {
+            this.setState({
+                color: color.hex
+            })
+        }
     }
 
-    getAllColorsAsHex = (): string => {
-        const { numberToHex } = this;
-        const { red, green, blue } = this.state;
+    handleClickOutside = (event: any) => {
+        let node = this.colorWheelRef.current;
+        if(node && !node.contains(event.target)) {
+            this.toggleColorPicker(false);
+        }
+    }
 
-        return `#${numberToHex(red)}${numberToHex(green)}${numberToHex(blue)}`
+    toggleColorPicker = (bool: boolean) => {
+        this.setState({
+            showWheel: bool
+        })
     }
 }
 
