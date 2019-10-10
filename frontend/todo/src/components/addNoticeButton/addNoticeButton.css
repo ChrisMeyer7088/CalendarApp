@@ -84,6 +84,7 @@ input[type=date]::-webkit-calendar-picker-indicator {
 .popup-date:hover {
     background-color: rgb(240, 240, 240);
     box-shadow: 1px 1px 5px rgba(0, 0, 0, 0.5);
+    cursor: pointer;
 }
 
 .popup-date:focus {
@@ -116,38 +117,58 @@ input[type=date]::-webkit-calendar-picker-indicator {
 }
 
 .popup-createEvent {
-    border: none;
-    border-radius: 8px;
+    background-color: white;
     padding: 8px;
-    background-color: rgb(240, 240, 240);
     color: black;
     font-size: 16px;
-    font-weight: bold;
-    box-shadow: 3px 3px 1px rgba(0, 0, 0, 0.5);
-    transition: box-shadow 0.3s ease-in-out;
+    border: 1px solid rgba(0, 0, 0, 0.5);
+    
 }
 
 .popup-createEvent:hover {
-    box-shadow: 10px 10px 5px rgba(0, 0, 0, 0.5);
+    font-size: 19px;
 }
 
-.popup-createEvent:focus {
-    outline: none;
+.container-addNotice-text {
+    margin: 4px;
 }
 
-.button-addNotice {
-    background-color: rgb(245, 245, 245);
-    font-size: 18px;
-    width: 80px;
-    border-radius: 24px;
-    padding: 3px 8px;
-    transition: box-shadow 0.3s ease-in-out;
+.container-addNotice {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding: 4px;
+    background-color: white;
+    border: 1px solid rgba(0, 0, 0, 0.5);
+    font-size: 19px;
 }
 
-.button-addNotice:hover {
-    box-shadow: 4px 4px 5px rgba(0, 0, 0, 0.5);
+.container-addNotice:hover {
+    font-size: 22px;
+}
+
+.button-movingShadow {
+    box-shadow: 6px 6px 5px rgba(0, 0, 0, 0.5);    
+    transition: all 1s ease-in-out;
+    border-radius: 360px;
+}
+
+.button-movingShadow:hover {
+    background-color: rgb(58, 161, 32);
+    color: white;
+    text-emphasis: bold;
     cursor: pointer;
+    box-shadow: 0 6px #666;
+    transition: all 0.3s ease-in-out;
 }
-.button-addNotice:focus {
+
+.button-movingShadow:focus {
     outline: none;
+}
+
+.button-movingShadow:active {
+    box-shadow: 0 3px #666;
+    transform: translateY(3px);
+    transition: all 0s ease-in-out;
+    text-emphasis: bolder;
 }

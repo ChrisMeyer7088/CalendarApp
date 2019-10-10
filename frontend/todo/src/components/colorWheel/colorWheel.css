@@ -1,0 +1,19 @@
+.container-colorWheel {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.colorWheel-trigger {
+    border-radius: 360px;
+    height: 30px;
+    width: 30px;
+}
+
+.colorWheel-trigger:hover {
+    cursor: pointer;
+}
+
+.colorWheel-trigger:focus {
+    outline: none;
+}

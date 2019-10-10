@@ -4,6 +4,7 @@ import { postNotice } from '../../services/infoRequests';
 import { Notice } from '../../interfaces/requests';
 import Popup from 'reactjs-popup';
 import TimePicker from '../timepicker/timepicker';
+import ColorWheel from '../colorWheel/colorWheel';
 
 interface Props {
     token: string,
@@ -37,14 +38,17 @@ class AddNoticeButton extends React.Component<Props, State> {
 
     render() {
         const { renderTitle, dateToStringFormat, renderStartDate, renderEndDate, renderDescription, 
-            updateBeginDate, updateEndDate } = this;
+            updateBeginDate, updateEndDate, getColor } = this;
         const { title, beginDate, endDate, description } = this.state.notice;
         let beginDateFormatted = dateToStringFormat(beginDate)
         let endDateFormatted = dateToStringFormat(endDate)
 
         return(
             <div>
-                <Popup trigger={<button className="button-addNotice">Create Event</button>} modal position="top center">
+                <Popup trigger={<button className="container-addNotice button-movingShadow">
+                                    <div className="container-addNotice-text">Create Event</div>
+                                </button>} modal position="top center">
+
                     <div className="popup-content">
                         <div className="popup-item popup-header">
                             <input autoComplete="off" className="popup-title-input" type="text" 
@@ -64,11 +68,14 @@ class AddNoticeButton extends React.Component<Props, State> {
                                 startDate={beginDate} endDate={endDate}/>
                             </div>
                         </div>
+                        <div>
+                            <ColorWheel getColor={getColor} />
+                        </div>
                         <div className="popup-item">
                             <textarea className="popup-details" placeholder="Event Notes" value={description} onChange={e => renderDescription(e)}></textarea>
                         </div>
                         <div className="popup-item container-popup-createEvent">
-                            <button className="popup-createEvent">Create</button>                            
+                            <button className="popup-createEvent button-movingShadow">Create</button>                            
                         </div>
                     </div>
                 </Popup>
@@ -105,6 +112,14 @@ class AddNoticeButton extends React.Component<Props, State> {
         
         //Date Object pass by reference so already updated in state at this point
         this.setState({})
+    }
+
+    getColor = (color: string) => {
+        let notice = this.state.notice;
+        notice.color = color;
+        this.setState({
+            notice
+        })
     }
 
     renderDescription = (event: any) => {
