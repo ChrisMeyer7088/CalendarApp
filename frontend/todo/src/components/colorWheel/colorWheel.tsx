@@ -4,6 +4,7 @@ import { SketchPicker } from 'react-color';
 
 interface Props {
     onChange: any;
+    initalColor: string;
 }
 
 interface State {
@@ -17,7 +18,7 @@ class ColorWheel extends React.Component<Props, State> {
         super(props);
 
         this.state = {
-            color: '#ffffff',
+            color: this.props.initalColor || '#00aaff',
             showWheel: false,
         }
     }

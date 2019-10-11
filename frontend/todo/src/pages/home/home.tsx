@@ -4,6 +4,7 @@ import { getUserNotices } from '../../services/infoRequests';
 import './home.css';
 import Header from '../../components/header/header';
 import HamburgerMenu from '../../components/hamburgerMenu/hamburgerMenu';
+import { getUniqueId } from '../../services/addNotice';
 
 interface State {
     userId: string,
@@ -76,12 +77,12 @@ class HomePage extends React.Component<null, State> {
         return (
             daysInWeekIncremenets.map(weekArr => {
                 return (
-                    <tr>
+                    <tr key={getUniqueId()}>
                         {weekArr.map(day => {
                             //Sets an id on the selected date
                             if(day.getMonth() === selectedDate.getMonth() && day.getDate() === selectedDate.getDate()) {
                                 return (
-                                    <td onClick={() => changeSelectedDate(day)} className="calendar-day" id="selected-day" >
+                                    <td key={getUniqueId()} onClick={() => changeSelectedDate(day)} className="calendar-day" id="selected-day" >
                                         <div>
                                             <div className="container-day-number">{localDateToDisplayString(day)}</div>
                                         </div>
@@ -89,7 +90,7 @@ class HomePage extends React.Component<null, State> {
                                 )
                             } else {
                                 return (
-                                    <td onClick={() => changeSelectedDate(day)} className="calendar-day">
+                                    <td key={getUniqueId()} onClick={() => changeSelectedDate(day)} className="calendar-day">
                                         <div>
                                             <div className="container-day-number">{localDateToDisplayString(day)}</div>
                                         </div>
@@ -109,7 +110,7 @@ class HomePage extends React.Component<null, State> {
                 <tr className="calendar-row-dates">
                     {this.DATES.map(day => {
                         return (
-                            <th className="calendar-header-dates">
+                            <th key={getUniqueId()} className="calendar-header-dates">
                                 <div>
                                     {day}
                                 </div>

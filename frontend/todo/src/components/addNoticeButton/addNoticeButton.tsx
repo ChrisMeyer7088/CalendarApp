@@ -14,10 +14,11 @@ interface Props {
 
 interface State {
     notice: Notice
-    headerSelected: boolean
+    errorHeader: boolean,
 }
 
 class AddNoticeButton extends React.Component<Props, State> {
+    private popupParentRef = React.createRef<HTMLDivElement>();
     constructor(props: any) {
         super(props);
         let beginDate = this.props.selectedDate;
@@ -29,29 +30,33 @@ class AddNoticeButton extends React.Component<Props, State> {
                 title: "",
                 beginDate,
                 endDate,
-                color: "",
+                color: "#00aaff",
                 description: ""
             },
-            headerSelected: false
+            errorHeader: false
         }
     }
 
     render() {
         const { renderTitle, dateToStringFormat, renderStartDate, renderEndDate, renderDescription, 
-            updateBeginDate, updateEndDate, updateColor } = this;
-        const { title, beginDate, endDate, description } = this.state.notice;
+            updateBeginDate, updateEndDate, updateColor, requestCreateNotice } = this;
+        const {notice, errorHeader} = this.state;
+        const { title, beginDate, endDate, description, color } = notice;
         let beginDateFormatted = dateToStringFormat(beginDate)
         let endDateFormatted = dateToStringFormat(endDate)
 
+        let headerClass = "popup-title-input"
+        if(errorHeader) headerClass += " error-border"
+
         return(
-            <div>
+            <div ref={this.popupParentRef}>
                 <Popup trigger={<button className="container-addNotice button-movingShadow">
                                     <div className="container-addNotice-text">Create Event</div>
-                                </button>} modal position="top center">
+                                </button>} modal position="top center" repositionOnResize>
 
                     <div className="popup-content">
                         <div className="popup-item popup-header">
-                            <input autoComplete="off" className="popup-title-input" type="text" 
+                            <input autoComplete="off" className={headerClass} type="text" 
                             value={title} placeholder="Event Title" onChange={e => renderTitle(e)} tabIndex={0}></input>
                         </div>
                         <div className="popup-item" id="container-popup-dates">
@@ -69,13 +74,13 @@ class AddNoticeButton extends React.Component<Props, State> {
                             </div>
                         </div>
                         <div>
-                            <ColorWheel onChange={updateColor} />
+                            <ColorWheel initalColor={color} onChange={updateColor} />
                         </div>
                         <div className="popup-item">
                             <textarea className="popup-details" placeholder="Event Notes" value={description} onChange={e => renderDescription(e)}></textarea>
                         </div>
                         <div className="popup-item container-popup-createEvent">
-                            <button className="popup-createEvent button-movingShadow">Create</button>                            
+                            <button onClick={() => requestCreateNotice()} className="popup-createEvent button-movingShadow">Create</button>                            
                         </div>
                     </div>
                 </Popup>
@@ -171,6 +176,37 @@ class AddNoticeButton extends React.Component<Props, State> {
         this.setState({
             notice: currentNotice
         })
+    }
+
+    requestCreateNotice = () => {
+        const { token, returnToLogin} = this.props;
+        const { notice } = this.state;
+        if(!notice.title) {
+            this.setState({
+                errorHeader: true
+            })
+        } else {
+            postNotice(token, this.state.notice)
+            .then(res => {
+                console.log(res);
+                this.closeAddEventPopup();
+            })
+            .catch(err => {
+                console.error(err)
+            })
+
+            this.setState({
+                errorHeader: false
+            })
+        }       
+    }
+
+    closeAddEventPopup = () => {
+        let node = this.popupParentRef.current;
+        console.log('clicked!')
+        if(node) {
+            node.click();
+        }
     }
 
 }
