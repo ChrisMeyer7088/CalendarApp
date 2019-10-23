@@ -201,6 +201,7 @@ class AddNoticeButton extends React.Component<Props, State> {
         }       
     }
 
+    //TODO Close AddEvent Popup after event has been added
     closeAddEventPopup = () => {
         let node = this.popupParentRef.current;
         console.log('clicked!')

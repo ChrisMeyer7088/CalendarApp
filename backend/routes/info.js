@@ -1,8 +1,8 @@
 const express = require("express");
 const router = express.Router();
-const { getUserNotices } = require('../db/models/notices');
+const { getUserNotices, addNotice } = require('../db/models/notices');
 const { getUserById, deleteUserById } = require('../db/models/users');
-const { authenticateToken } = require('../services/infoServices')
+const { authenticateToken, validateNotice } = require('../services/info')
 
 router.get("/notices", authenticateToken, (req, res, next) => {
     getUserNotices(req.body.userId)
@@ -82,19 +82,16 @@ router.delete("/account", authenticateToken, (req, res, next) => {
     
 })
 
-router.post("/notice", authenticateToken, (req, res, next) => {
-    let notice = req.body.notice;
-    if(!notice || !notice.title || !notice.beginDate || !notice.endDate || !notice.color || !notice.userId) {
-        res.status(400).json({
-            type: "info.addnotice",
-            data: {
-                message: "Invalid notice"
-            },
-            success: false
-        })
-    } else {
-        console.log('Adding valid notice')
-    }
+router.post("/notice", [authenticateToken, validateNotice], (req, res, next) => {
+    console.log("adding notice")
+    console.log(typeof req.body.notice.beginDate)
+    res.status(200).json({
+        type: "info.addnotice",
+        data: {
+            message: "Notice Added"
+        },
+        success: true
+    })
 })
 
 module.exports = router;

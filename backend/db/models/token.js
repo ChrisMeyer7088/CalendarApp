@@ -113,6 +113,24 @@ function checkForActiveToken(userId) {
     })
 }
 
+function updateToken(value) {
+    return new Promise((resolve, reject) => {
+        let queryString = `
+            UPDATE 
+                token
+            SET
+                ts = to_timestamp($1 / 1000.0)
+            WHERE
+                value = $2;
+        `
+        pool.query(queryString, [Date.now(), value])
+            .then(queryResult => {
+                resolve(queryResult);
+            })
+            .catch(err => reject(err))
+    })
+}
+
 function deleteToken(value) {
     return new Promise((resolve, reject) => {
         let queryString = `
@@ -121,9 +139,11 @@ function deleteToken(value) {
         `
         pool.query(queryString, [value])
             .then(result => {
-                resolve(result)})
+                resolve(result)
+            })
             .catch(err => {
-                reject(err)})
+                reject(err)
+            })
     })
 }
 
@@ -134,5 +154,6 @@ module.exports = {
     checkForActiveToken,
     getAssociatedUser,
     deleteToken,
-    generateTokenValue
+    generateTokenValue,
+    updateToken
 }

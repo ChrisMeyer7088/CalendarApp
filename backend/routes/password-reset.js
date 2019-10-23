@@ -2,7 +2,7 @@ const express = require("express");
 const router = express.Router();
 const { getUserByEmail } = require('../db/models/users')
 const { createResetLink, getActiveResetLink, checkLinkValue, resetPassword} = require('../db/models/resetLink');
-const { sendMail, validatePassword } = require('../services/userServices')
+const { sendMail, validatePassword } = require('../services/user')
 
 
 router.post('/email', (req, res, next) => {

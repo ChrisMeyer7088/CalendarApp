@@ -2,7 +2,7 @@ const express = require("express");
 const router = express.Router();
 const { createNewUser, getUserByUsername, checkUserCredentials, getUserByEmail } = require('../db/models/users')
 const { createToken, checkForActiveToken } = require('../db/models/token');
-const { validatePassword, validateEmail } = require('../services/userServices')
+const { validatePassword, validateEmail } = require('../services/user')
 
 router.post('/register', (req, res, next) => {
     if(!req.body.username || !req.body.password || !req.body.email) {
