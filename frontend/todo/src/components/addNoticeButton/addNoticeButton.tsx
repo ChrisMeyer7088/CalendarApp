@@ -158,7 +158,9 @@ class AddNoticeButton extends React.Component<Props, State> {
                 console.log(res)
             })
             .catch(err => {
-                console.error(err)
+                if(err.response.status === 401) {
+                    this.props.returnToLogin();
+                }
             })
     }
 
@@ -192,9 +194,10 @@ class AddNoticeButton extends React.Component<Props, State> {
                 this.closeAddEventPopup();
             })
             .catch(err => {
-                console.error(err)
+                if(err.response.status === 401) {
+                    returnToLogin();
+                }
             })
-
             this.setState({
                 errorHeader: false
             })

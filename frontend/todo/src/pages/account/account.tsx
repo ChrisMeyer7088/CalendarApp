@@ -118,7 +118,9 @@ class Account extends React.Component<null, State> {
             }
         })
         .catch(err => {
-            console.error(err)
+            if(err.response.status === 401) {
+                this.returnToLogin();
+            }
         })
     }
 

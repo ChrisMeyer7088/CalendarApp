@@ -132,8 +132,10 @@ class HomePage extends React.Component<null, State> {
                     })
                 }
             })
-            .catch(err => { //TODO fix login when dealing with invalid responses
+            .catch(err => {
+                if(err.response.status === 401) {
                     this.returnToLogin();
+                }
             })
     }
 
