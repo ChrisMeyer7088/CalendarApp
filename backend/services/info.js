@@ -50,7 +50,8 @@ function validateNotice(req, res, next) {
     beginDate = new Date(beginDate);
     endDate = new Date(endDate);
     color = color.substring(1, color.length)
-    if(!notice || !title || !datesAreVaid(beginDate, endDate) || !colorIsValid(color)) { 
+    if(!notice || !title || !datesAreVaid(beginDate, endDate) || !colorIsValid(color)) {
+        
         res.status(400).json({
             type: "info.notice",
             data: {
@@ -60,6 +61,9 @@ function validateNotice(req, res, next) {
             success: true
         })
     } else {
+        req.body.notice.beginDate = beginDate;
+        req.body.notice.endDate = endDate;
+        req.body.notice.color = color;
         next();
     }
 }

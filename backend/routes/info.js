@@ -70,7 +70,6 @@ router.delete("/account", authenticateToken, (req, res, next) => {
         })
     })
     .catch(err => {
-        console.log(err)
         res.status(500).json({
             type: "info.AccountDelete",
                 data: {
@@ -83,15 +82,26 @@ router.delete("/account", authenticateToken, (req, res, next) => {
 })
 
 router.post("/notice", [authenticateToken, validateNotice], (req, res, next) => {
-    console.log("adding notice")
-    console.log(typeof req.body.notice.beginDate)
-    res.status(200).json({
-        type: "info.addnotice",
-        data: {
-            message: "Notice Added"
-        },
-        success: true
-    })
+    let notice = req.body.notice;
+    addNotice(notice.title, notice.beginDate, notice.endDate, notice.color, req.body.userId, notice.description || '')
+        .then(queryResult => {
+            res.status(200).json({
+                type: "info.addnotice",
+                data: {
+                    message: "Notice Added"
+                },
+                success: true
+            })
+        })
+        .catch(err => {
+            res.status(500).json({
+                type: "info.addnotice",
+                    data: {
+                        message: "Something went wrong"
+                    },
+                    success: false
+            })
+        })
 })
 
 module.exports = router;

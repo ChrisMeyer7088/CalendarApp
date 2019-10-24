@@ -14,11 +14,10 @@ interface Props {
 
 interface State {
     notice: Notice
-    errorHeader: boolean,
+    errorHeader: boolean
 }
 
 class AddNoticeButton extends React.Component<Props, State> {
-    private popupParentRef = React.createRef<HTMLDivElement>();
     constructor(props: any) {
         super(props);
         let beginDate = this.props.selectedDate;
@@ -49,12 +48,12 @@ class AddNoticeButton extends React.Component<Props, State> {
         if(errorHeader) headerClass += " error-border"
 
         return(
-            <div ref={this.popupParentRef}>
+            <div>
                 <Popup trigger={<button className="container-addNotice button-movingShadow">
                                     <div className="container-addNotice-text">Create Event</div>
-                                </button>} modal position="top center" repositionOnResize>
+                                </button>} modal position="top center" repositionOnResize >
 
-                    <div className="popup-content">
+                    {close => <div className="popup-content">
                         <div className="popup-item popup-header">
                             <input autoComplete="off" className={headerClass} type="text" 
                             value={title} placeholder="Event Title" onChange={e => renderTitle(e)} tabIndex={0}></input>
@@ -80,9 +79,11 @@ class AddNoticeButton extends React.Component<Props, State> {
                             <textarea className="popup-details" placeholder="Event Notes" value={description} onChange={e => renderDescription(e)}></textarea>
                         </div>
                         <div className="popup-item container-popup-createEvent">
-                            <button onClick={() => requestCreateNotice()} className="popup-createEvent button-movingShadow">Create</button>                            
+                            <button onClick={() => {
+                                requestCreateNotice(close);
+                                }} className="popup-createEvent button-movingShadow">Create</button>                            
                         </div>
-                    </div>
+                    </div>}
                 </Popup>
             </div>
         )
@@ -180,7 +181,7 @@ class AddNoticeButton extends React.Component<Props, State> {
         })
     }
 
-    requestCreateNotice = () => {
+    requestCreateNotice = (close: any) => {
         const { token, returnToLogin} = this.props;
         const { notice } = this.state;
         if(!notice.title) {
@@ -190,8 +191,7 @@ class AddNoticeButton extends React.Component<Props, State> {
         } else {
             postNotice(token, this.state.notice)
             .then(res => {
-                console.log(res);
-                this.closeAddEventPopup();
+                close();
             })
             .catch(err => {
                 if(err.response.status === 401) {
@@ -203,16 +203,6 @@ class AddNoticeButton extends React.Component<Props, State> {
             })
         }       
     }
-
-    //TODO Close AddEvent Popup after event has been added
-    closeAddEventPopup = () => {
-        let node = this.popupParentRef.current;
-        console.log('clicked!')
-        if(node) {
-            node.click();
-        }
-    }
-
 }
 
 export default AddNoticeButton;
