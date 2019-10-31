@@ -5,7 +5,17 @@ const { getUserById, deleteUserById } = require('../db/models/users');
 const { authenticateToken, validateNotice } = require('../services/info')
 
 router.get("/notices", authenticateToken, (req, res, next) => {
-    getUserNotices(req.body.userId)
+    let date = new Date(req.query.date);
+    if(!date) {
+        res.status(400).json({
+            type: "info.notices",
+                data: {
+                    message: "Date is a required Query Parameter",
+                },
+                success: false
+        })
+    } else {
+        getUserNotices(req.body.userId, date)
         .then(result => {
             if(!result) return;
             res.status(200).json({
@@ -27,6 +37,7 @@ router.get("/notices", authenticateToken, (req, res, next) => {
                 success: false
             })
         })
+    }
 })
 
 router.get('/account', authenticateToken, (req, res, next) => {
@@ -60,7 +71,6 @@ router.get('/account', authenticateToken, (req, res, next) => {
 router.delete("/account", authenticateToken, (req, res, next) => {
     deleteUserById(req.body.userId)
     .then(result => {
-        console.log(result)
         res.status(200).json({
             type: "info.AccountDelete",
                 data: {

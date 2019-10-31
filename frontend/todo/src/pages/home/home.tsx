@@ -5,28 +5,27 @@ import './home.css';
 import Header from '../../components/header/header';
 import HamburgerMenu from '../../components/hamburgerMenu/hamburgerMenu';
 import { getUniqueId } from '../../services/addNotice';
+import { Notice } from '../../interfaces/requests';
 
 interface State {
     userId: string,
     token: string,
     redirectToLogin: boolean,
-    notices: Object[],
-    selectedDate: Date
+    selectedDate: Date,
+    eventMap: Map<string, Map<number, Notice[]>>
 }
 
 class HomePage extends React.Component<null, State> {
     private DATES: string[] = ["SUN", "MON", "TUE", "WED", "THU", "FRI", "SAT"];
-    
     constructor(props: any) {
         super(props);
         this.state = {
             userId: "",
             token: localStorage.getItem("token") || "",
             redirectToLogin: false,
-            notices: [],
             selectedDate: new Date(),
+            eventMap: new Map()
         }
-        this.retrieveNotices();
     }
 
     render() {
@@ -53,6 +52,10 @@ class HomePage extends React.Component<null, State> {
                 </div>
             </div>
         )
+    }
+
+    componentDidMount() {
+        this.retrieveNotices();
     }
 
 
@@ -122,17 +125,37 @@ class HomePage extends React.Component<null, State> {
     }
 
     retrieveNotices = () => {
-        getUserNotices(this.state.token)
+        getUserNotices(this.state.token, this.state.selectedDate)
             .then(res => {
-                if(res.data.data.returnToLogin) {
-                    this.returnToLogin();
-                } else {
-                    this.setState({
-                        notices: res.data.data.notices
+                let notices = res.data.data.notices;
+                let eventMap = this.state.eventMap;
+                for(let i = 0; i < notices.length; i++) {
+                    let beginDate = new Date(notices[i].begindate);
+                    let month: string = (beginDate.getMonth() + 1).toString();
+                    let year: string = beginDate.getFullYear().toString();
+                    let day: string = beginDate.getDate().toString();
+                    let idString = year + '-' + month;
+
+                    // eventMap<string, dayMap<string, eventIdMap<number, Notice>>
+                    let dayMap = eventMap.get(idString) || new Map();
+                    let eventIdMap: Map<number, Notice> = dayMap.get(day) || new Map();
+                    eventIdMap.set(notices[i].id, {
+                        beginDate,
+                        endDate: new Date(notices[i].enddate),
+                        title: notices[i].title,
+                        color: notices[i].color,
+                        description: notices[i].description
                     })
+                    dayMap.set(day, eventIdMap);
+                    eventMap.set(idString, dayMap);
                 }
+                console.log(eventMap)
+                this.setState({
+                    eventMap
+                })
             })
             .catch(err => {
+                if(!err.response || !err.response.status) return;
                 if(err.response.status === 401) {
                     this.returnToLogin();
                 }

@@ -3,9 +3,9 @@ import { Notice } from '../interfaces/requests'
 
 const baseServerURL = "http://localhost:8000/info/"
 
-export const getUserNotices = (token: string) => {
-    axios.defaults.headers.common['Authorization'] = token
-    return axios.get(baseServerURL + "notices")
+export const getUserNotices = (token: string, currentDate: Date) => {
+    axios.defaults.headers.common['Authorization'] = token;
+    return axios.get(baseServerURL + `notices?date=${currentDate.toLocaleDateString()}`)
 }
 
 export const postNotice = (token: string, notice: Notice) => {

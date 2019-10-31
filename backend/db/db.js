@@ -50,8 +50,6 @@ function addMigrations() {
   })
 }
 
-// reInitalizeDB();
-
 module.exports = {
   dropTables,
   createTables,

@@ -42,7 +42,7 @@ class AddNoticeButton extends React.Component<Props, State> {
         const {notice, errorHeader} = this.state;
         const { title, beginDate, endDate, description, color } = notice;
         let beginDateFormatted = dateToStringFormat(beginDate)
-        let endDateFormatted = dateToStringFormat(endDate)
+        let endDateFormatted = dateToStringFormat(endDate);
 
         let headerClass = "popup-title-input"
         if(errorHeader) headerClass += " error-border"
@@ -139,10 +139,10 @@ class AddNoticeButton extends React.Component<Props, State> {
     dateToStringFormat = (date: Date) => {
         let day =  date.getDate().toString();
         if(parseInt(day) < 10) day = `0${day}`;
-        let month =  date.getMonth().toString();
+        let month =  (date.getMonth() + 1).toString();
         if(parseInt(month) < 10) month = `0${month}`;
         let form = date.getFullYear() + '-' + month + '-' + day;
-        return form
+        return form;
     }
 
     //Date Objects are pass by reference so adjusting teh date parameter will directly change the associated object out of function scope
