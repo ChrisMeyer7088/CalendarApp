@@ -145,7 +145,7 @@ class HomePage extends React.Component<null, State> {
                 //Render all events
                 return (
                     arr.map((event: Notice) => {
-                        let color = getTextColor(event.color + event.title);
+                        let color = getTextColor(event.color);
                         return (
                             <div style={{backgroundColor: "#"+event.color, color}} className="calendar-event" key={getUniqueId()}>
                                 <div className="calendar-event-title">
@@ -276,6 +276,7 @@ class HomePage extends React.Component<null, State> {
     //ex format: getTextColor('00aaff')
     private getTextColor = (hex: string): string => {
         let rgb = this.hexToRGB(hex);
+        console.log(rgb)
         if(rgb.red > 180 || rgb.green > 180 || rgb.blue > 180) return '#000000'
         return '#ffffff';
     }
