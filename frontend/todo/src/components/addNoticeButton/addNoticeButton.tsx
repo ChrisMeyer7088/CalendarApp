@@ -73,7 +73,7 @@ class AddNoticeButton extends React.Component<Props, State> {
                             </div>
                         </div>
                         <div>
-                            <ColorWheel initalColor={color} onChange={updateColor} />
+                            <ColorWheel color={color} onChange={updateColor} />
                         </div>
                         <div className="popup-item">
                             <textarea className="popup-details" placeholder="Event Notes" value={description} onChange={e => renderDescription(e)}></textarea>
@@ -120,12 +120,14 @@ class AddNoticeButton extends React.Component<Props, State> {
         this.setState({})
     }
 
-    updateColor = (color: string) => {
-        let notice = this.state.notice;
-        notice.color = color;
-        this.setState({
-            notice
-        })
+    updateColor = (color: any) => {
+        if(color.hex) {
+            let notice = this.state.notice;
+            notice.color = color.hex;
+            this.setState({
+                notice
+            })
+        }
     }
 
     renderDescription = (event: any) => {
@@ -151,18 +153,6 @@ class AddNoticeButton extends React.Component<Props, State> {
         date.setDate(parseInt(arr[2]))
         date.setMonth(parseInt(arr[1]))
         date.setFullYear(parseInt(arr[0]))
-    }
-
-    addNotice = () => {
-        postNotice(this.props.token, this.state.notice)
-            .then(res => {
-                console.log(res)
-            })
-            .catch(err => {
-                if(err.response.status === 401) {
-                    this.props.returnToLogin();
-                }
-            })
     }
 
     updateBeginDate = (newBeginDate: Date) => {

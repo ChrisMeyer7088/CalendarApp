@@ -12,7 +12,7 @@ interface State {
     token: string,
     redirectToLogin: boolean,
     selectedDate: Date,
-    eventMap: Map<string, Map<number, Notice[]>>
+    eventMap: Map<string, Map<string, Notice[]>>
 }
 
 class HomePage extends React.Component<null, State> {
@@ -55,13 +55,13 @@ class HomePage extends React.Component<null, State> {
     }
 
     componentDidMount() {
-        this.retrieveNotices();
+        this.retrieveNotices(this.state.selectedDate);
     }
 
 
     //Renders CalendarDays using information from the selected days
     renderCalendarDays = () => {
-        const { getFullCalendarDays, localDateToDisplayString, changeSelectedDate } = this;
+        const { getFullCalendarDays, localDateToDisplayString, changeSelectedDate, renderDayEvents } = this;
         const { selectedDate } = this.state;
 
         let allDays: Date[] = getFullCalendarDays(selectedDate.getMonth(), selectedDate.getFullYear());
@@ -87,7 +87,10 @@ class HomePage extends React.Component<null, State> {
                                 return (
                                     <td key={getUniqueId()} onClick={() => changeSelectedDate(day)} className="calendar-day" id="selected-day" >
                                         <div>
-                                            <div className="container-day-number">{localDateToDisplayString(day)}</div>
+                                            <div className="container-day-number">
+                                                {localDateToDisplayString(day)}
+                                            </div>
+                                            {renderDayEvents(day)}
                                         </div>
                                     </td>
                                 )
@@ -95,7 +98,10 @@ class HomePage extends React.Component<null, State> {
                                 return (
                                     <td key={getUniqueId()} onClick={() => changeSelectedDate(day)} className="calendar-day">
                                         <div>
-                                            <div className="container-day-number">{localDateToDisplayString(day)}</div>
+                                            <div className="container-day-number">
+                                                {localDateToDisplayString(day)}
+                                            </div>
+                                            {renderDayEvents(day)}
                                         </div>
                                     </td>
                                 )
@@ -105,6 +111,55 @@ class HomePage extends React.Component<null, State> {
                 )
             })
                    
+        )
+    }
+
+    //Retrieves the events of the particular day and renders them
+    renderDayEvents = (date: Date) => {
+        const { getTextColor } = this;
+        const { eventMap } = this.state;
+        let year = date.getFullYear();
+        let month = date.getMonth() + 1;
+        let day = date.getDate();
+        let arr: Notice[] = [];
+
+        //Get all the notices of the day
+        let monthMap = eventMap.get(year + '-' + month);
+        if(monthMap) {
+            let dayMap = monthMap.get(day.toString());
+            if(dayMap) {
+                //Add all notices of the day to the array and sort them
+                let iterator = dayMap.entries();
+                let result = iterator.next();
+                while(!result.done) {
+                    arr.push(result.value[1])
+                    result = iterator.next();
+                }
+                //Sort the array by beginDate
+                arr.sort((a, b) => {
+                    if(a.beginDate > b.beginDate) return 1;
+                    if(a.beginDate === b.beginDate) return 0;
+                    return -1;
+                })
+
+                //Render all events
+                return (
+                    arr.map((event: Notice) => {
+                        let color = getTextColor(event.color + event.title);
+                        return (
+                            <div style={{backgroundColor: "#"+event.color, color}} className="calendar-event" key={getUniqueId()}>
+                                <div className="calendar-event-title">
+                                    {event.title}
+                                </div>
+                            </div>
+                        )
+                    })
+                )
+            }
+        }
+
+        return (
+            <div></div>
         )
     }
 
@@ -124,8 +179,9 @@ class HomePage extends React.Component<null, State> {
         )
     }
 
-    retrieveNotices = () => {
-        getUserNotices(this.state.token, this.state.selectedDate)
+    //EventMap key String: yyyy-mm
+    retrieveNotices = (selectedDate: Date) => {
+        getUserNotices(this.state.token, selectedDate)
             .then(res => {
                 let notices = res.data.data.notices;
                 let eventMap = this.state.eventMap;
@@ -138,8 +194,8 @@ class HomePage extends React.Component<null, State> {
 
                     // eventMap<string, dayMap<string, eventIdMap<number, Notice>>
                     let dayMap = eventMap.get(idString) || new Map();
-                    let eventIdMap: Map<number, Notice> = dayMap.get(day) || new Map();
-                    eventIdMap.set(notices[i].id, {
+                    let eventIdMap: Map<string, Notice> = dayMap.get(day) || new Map();
+                    eventIdMap.set(notices[i].id.toString(), {
                         beginDate,
                         endDate: new Date(notices[i].enddate),
                         title: notices[i].title,
@@ -149,7 +205,6 @@ class HomePage extends React.Component<null, State> {
                     dayMap.set(day, eventIdMap);
                     eventMap.set(idString, dayMap);
                 }
-                console.log(eventMap)
                 this.setState({
                     eventMap
                 })
@@ -178,6 +233,7 @@ class HomePage extends React.Component<null, State> {
     setMonth = (newMonth: number) => {
         let selectedDate: Date = this.state.selectedDate;
         selectedDate.setMonth(newMonth);
+        this.retrieveNotices(selectedDate)
         this.setState({
             selectedDate
         })
@@ -217,6 +273,38 @@ class HomePage extends React.Component<null, State> {
         return `${dayAsString}`
     }
 
+    //ex format: getTextColor('00aaff')
+    private getTextColor = (hex: string): string => {
+        let rgb = this.hexToRGB(hex);
+        if(rgb.red > 180 || rgb.green > 180 || rgb.blue > 180) return '#000000'
+        return '#ffffff';
+    }
+
+    private hexToRGB = (hex: string): {red:number, green:number, blue:number} => {
+        const { hexToNumber } = this;
+
+        if(hex.length !== 6) return {red: 0, green: 170, blue: 255};
+        let red = hexToNumber(hex.substr(0, 2));
+        let green = hexToNumber(hex.substr(2, 2));
+        let blue = hexToNumber(hex.substr(4, 2));
+        return {red, green, blue};
+    }
+
+    private hexToNumber = (hex: string) : number => {
+        hex = hex.toLowerCase();
+        const ACHARVALUE: number = 97;
+        let value: number = 0;
+        let charValue: number = 0;
+        let addedValue: number = 0;
+        for(let i = 0; i < hex.length; i++) {
+            charValue = parseInt(hex[i])
+            //Check if it is a letter then get hexvalue of letter
+            if(!charValue && charValue !== 0) charValue = (hex.charCodeAt(i) - ACHARVALUE) + 10;
+            addedValue = charValue * (16 ** (hex.length - i - 1));
+            value += addedValue;
+        }
+        return value;
+    }
 }
 
 export default HomePage;

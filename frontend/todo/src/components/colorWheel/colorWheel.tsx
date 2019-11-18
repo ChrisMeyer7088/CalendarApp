@@ -4,11 +4,10 @@ import { SketchPicker } from 'react-color';
 
 interface Props {
     onChange: any;
-    initalColor: string;
+    color: string;
 }
 
 interface State {
-    color: string
     showWheel: boolean;
 }
 
@@ -18,7 +17,6 @@ class ColorWheel extends React.Component<Props, State> {
         super(props);
 
         this.state = {
-            color: this.props.initalColor || '#00aaff',
             showWheel: false,
         }
     }
@@ -33,7 +31,8 @@ class ColorWheel extends React.Component<Props, State> {
 
     render() {
         const { toggleColorPicker, handleChange } = this;
-        const { showWheel, color } = this.state;
+        const { color } = this.props;
+        const { showWheel } = this.state;
 
         let colorWheelStyle = {backgroundColor: color}
 
@@ -49,9 +48,7 @@ class ColorWheel extends React.Component<Props, State> {
 
     handleChange = (color: any) => {
         if(color && color.hex) {
-            this.setState({
-                color: color.hex
-            })
+            this.props.onChange(color);
         }
     }
 
